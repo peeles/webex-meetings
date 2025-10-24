@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import {ref, computed, reactive} from 'vue';
-import { LAYOUTS } from '../dicts/constants';
+import { LAYOUTS } from '@/dicts/constants';
 
 const meetingsMap = new Map();
 
@@ -13,6 +13,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
     const networkQuality = ref('good'); // 'good', 'poor', 'unknown'
     const meetingLocked = ref(false);
     const meetingNotifications = ref([]);
+    const incomingCall = ref(null); // { meetingId, callerName, meetingDetails, timestamp }
 
     const currentMeeting = computed(() => {
         if (!currentMeetingId.value) {
@@ -136,6 +137,17 @@ export const useMeetingsStore = defineStore('meetings', () => {
         meetingNotifications.value = [];
     };
 
+    const setIncomingCall = (callData) => {
+        incomingCall.value = {
+            ...callData,
+            timestamp: Date.now()
+        };
+    };
+
+    const clearIncomingCall = () => {
+        incomingCall.value = null;
+    };
+
     const pinParticipant = (memberId) => {
         pinnedParticipantId.value = memberId;
     };
@@ -162,6 +174,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
         networkQuality,
         meetingLocked,
         meetingNotifications,
+        incomingCall,
         addMeeting,
         removeMeeting,
         setCurrentMeeting,
@@ -182,5 +195,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
         addNotification,
         removeNotification,
         clearNotifications,
+        setIncomingCall,
+        clearIncomingCall,
     };
 });

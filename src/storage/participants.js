@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { PARTICIPANT_STATUS } from '../dicts/constants';
+import { PARTICIPANT_STATUS } from '@/dicts/constants';
 
 export const useParticipantsStore = defineStore('participants', () => {
     const participants = ref(new Map());

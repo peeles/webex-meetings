@@ -1,4 +1,4 @@
-import { useMediaStore } from '../storage/media';
+import { useMediaStore } from '@/storage/media';
 import { useWebex } from './useWebex';
 import { getLocalMedia } from './useWebexMeetings';
 

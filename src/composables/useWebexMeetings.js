@@ -1,6 +1,6 @@
-import { useMeetingsStore } from '../storage/meetings';
-import { useParticipantsStore } from '../storage/participants';
-import { useMediaStore } from '../storage/media';
+import { useMeetingsStore } from '@/storage/meetings';
+import { useParticipantsStore } from '@/storage/participants';
+import { useMediaStore } from '@/storage/media';
 import { useWebex } from './useWebex';
 import { useWebexMultistream } from './useWebexMultistream';
 import { MEETING_STATES, PARTICIPANT_STATUS } from '../dicts/constants';
@@ -605,6 +605,103 @@ export const useWebexMeetings = () => {
         }
     };
 
+    /**
+     * Setup global meeting listeners for incoming calls
+     * Call this once after SDK initialization
+     */
+    const setupGlobalMeetingListeners = () => {
+        const webex = getWebexInstance();
+        if (!webex || !webex.meetings) {
+            console.warn('[IncomingCall] Webex not initialized');
+            return;
+        }
+
+        // Listen for incoming meeting notifications
+        webex.meetings.on('meeting:added', (event) => {
+            const meeting = event.meeting;
+
+            console.log('[IncomingCall] New meeting detected:', {
+                id: meeting.id,
+                sipUri: meeting.sipUri,
+                state: meeting.state
+            });
+
+            // Check if this is an incoming call (not one we created)
+            if (meeting.state === 'ACTIVE' || meeting.state === 'IDLE') {
+                // Get caller information
+                const callerName = meeting.partner?.name || meeting.sipUri || 'Unknown Caller';
+                const meetingDetails = meeting.sipUri || meeting.destination;
+
+                // Show incoming call toast
+                meetingsStore.setIncomingCall({
+                    meetingId: meeting.id,
+                    callerName,
+                    meetingDetails,
+                    meeting // Store reference for answering
+                });
+
+                console.log('[IncomingCall] Incoming call from:', callerName);
+
+                // Setup listeners for this meeting
+                setupMeetingListeners(meeting);
+
+                // Add to store
+                meetingsStore.addMeeting(meeting);
+            }
+        });
+    };
+
+    /**
+     * Answer an incoming call
+     */
+    const answerIncomingCall = async (meetingId) => {
+        try {
+            console.log('[IncomingCall] Answering call:', meetingId);
+
+            // Clear the incoming call toast
+            meetingsStore.clearIncomingCall();
+
+            // Join the meeting
+            await joinMeeting(meetingId);
+
+            console.log('[IncomingCall] Call answered successfully');
+        } catch (err) {
+            console.error('[IncomingCall] Error answering call:', err);
+            meetingsStore.addNotification({
+                type: 'error',
+                message: 'Failed to answer incoming call'
+            });
+            throw err;
+        }
+    };
+
+    /**
+     * Decline an incoming call
+     */
+    const declineIncomingCall = async (meetingId) => {
+        try {
+            console.log('[IncomingCall] Declining call:', meetingId);
+
+            const meetingData = meetingsStore.getMeetingById(meetingId);
+            if (meetingData) {
+                // Leave/decline the meeting
+                await meetingData.meeting.leave();
+
+                // Remove from store
+                meetingsStore.removeMeeting(meetingId);
+            }
+
+            // Clear the incoming call toast
+            meetingsStore.clearIncomingCall();
+
+            console.log('[IncomingCall] Call declined');
+        } catch (err) {
+            console.error('[IncomingCall] Error declining call:', err);
+            // Still clear the toast even if decline fails
+            meetingsStore.clearIncomingCall();
+        }
+    };
+
     return {
         syncMeetings,
         createMeeting,
@@ -618,6 +715,9 @@ export const useWebexMeetings = () => {
         admitFromLobby,
         admitAllFromLobby,
         denyEntry,
-        broadcastPinState
+        broadcastPinState,
+        setupGlobalMeetingListeners,
+        answerIncomingCall,
+        declineIncomingCall
     };
 };

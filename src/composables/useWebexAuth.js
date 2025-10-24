@@ -1,4 +1,4 @@
-import { useAuthStore } from '../storage/auth';
+import { useAuthStore } from '@/storage/auth';
 import { useWebex } from './useWebex';
 
 export const useWebexAuth = () => {

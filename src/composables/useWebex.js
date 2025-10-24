@@ -1,4 +1,3 @@
-// src/composables/useWebex.js
 import { ref } from 'vue';
 
 let webexInstance = null;
