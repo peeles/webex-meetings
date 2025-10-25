@@ -9,7 +9,7 @@
     >
         <div
             v-if="isVisible"
-            class="fixed bottom-6 right-6 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-80"
+            class="fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-86"
         >
             <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-3">

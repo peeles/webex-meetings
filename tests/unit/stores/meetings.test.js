@@ -29,6 +29,12 @@ describe('Meetings Store', () => {
 
         expect(store.getMeetingById('meeting-123')).toBeTruthy();
         expect(store.meetingsList).toHaveLength(1);
+        expect(store.meetingsList[0]).toEqual({
+            id: 'meeting-123',
+            sipUri: 'test@example.com',
+            destination: 'test@example.com',
+            state: 'IDLE',
+        });
     });
 
     it('removes a meeting', () => {
