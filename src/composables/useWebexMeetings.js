@@ -684,8 +684,8 @@ export const useWebexMeetings = () => {
 
             const meetingData = meetingsStore.getMeetingById(meetingId);
             if (meetingData) {
-                // Leave/decline the meeting
-                await meetingData.meeting.leave();
+                // decline the meeting
+                await meetingData.meeting.decline();
 
                 // Remove from store
                 meetingsStore.removeMeeting(meetingId);
