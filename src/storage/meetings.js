@@ -22,7 +22,12 @@ export const useMeetingsStore = defineStore('meetings', () => {
     });
 
     const meetingsList = computed(() => {
-        return Array.from(meetingsMap.values());
+        return Array.from(meetingsMap.values()).map((meeting) => ({
+            id: meeting.id,
+            sipUri: meeting.sipUri,
+            destination: meeting.destination,
+            state: meeting.state,
+        }));
     });
 
     const addMeeting = (meeting) => {

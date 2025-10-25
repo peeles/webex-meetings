@@ -1,6 +1,6 @@
 import { useMediaStore } from '@/storage/media';
 import { useWebex } from './useWebex';
-import { getLocalMedia } from './useWebexMeetings';
+import { getLocalMedia } from './localMediaState';
 
 export const useWebexMedia = () => {
     const mediaStore = useMediaStore();

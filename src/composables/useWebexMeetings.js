@@ -3,85 +3,55 @@ import { useParticipantsStore } from '@/storage/participants';
 import { useMediaStore } from '@/storage/media';
 import { useWebex } from './useWebex';
 import { useWebexMultistream } from './useWebexMultistream';
+import { useWebexMedia } from './useWebexMedia';
+import { cleanupLocalMedia } from './localMediaState';
 import { MEETING_STATES, PARTICIPANT_STATUS } from '../dicts/constants';
 
-let localMedia = {
-    microphoneStream: undefined,
-    cameraStream: undefined,
-    screenShare: {
-        video: undefined,
-        audio: undefined,
-    },
-};
-
-/**
- * Cleanup local media streams and tracks
- * Stops both the Webex SDK wrapper and the outputStream tracks
- */
-const cleanupLocalMedia = () => {
-    console.log('[CleanupMedia] Stopping all local media streams...');
-
-    // Stop microphone stream
-    if (localMedia.microphoneStream) {
-        // Stop wrapper tracks
-        if (localMedia.microphoneStream.getTracks) {
-            localMedia.microphoneStream.getTracks().forEach(track => track.stop());
-        }
-        // Stop outputStream tracks
-        if (localMedia.microphoneStream.outputStream?.getTracks) {
-            localMedia.microphoneStream.outputStream.getTracks().forEach(track => track.stop());
-        }
-        localMedia.microphoneStream = undefined;
-    }
-
-    // Stop camera stream
-    if (localMedia.cameraStream) {
-        // Stop wrapper tracks
-        if (localMedia.cameraStream.getTracks) {
-            localMedia.cameraStream.getTracks().forEach(track => track.stop());
-        }
-        // Stop outputStream tracks
-        if (localMedia.cameraStream.outputStream?.getTracks) {
-            localMedia.cameraStream.outputStream.getTracks().forEach(track => track.stop());
-        }
-        localMedia.cameraStream = undefined;
-    }
-
-    // Stop screen share streams
-    if (localMedia.screenShare.video) {
-        if (localMedia.screenShare.video.getTracks) {
-            localMedia.screenShare.video.getTracks().forEach(track => track.stop());
-        }
-        if (localMedia.screenShare.video.outputStream?.getTracks) {
-            localMedia.screenShare.video.outputStream.getTracks().forEach(track => track.stop());
-        }
-        localMedia.screenShare.video = undefined;
-    }
-
-    if (localMedia.screenShare.audio) {
-        if (localMedia.screenShare.audio.getTracks) {
-            localMedia.screenShare.audio.getTracks().forEach(track => track.stop());
-        }
-        if (localMedia.screenShare.audio.outputStream?.getTracks) {
-            localMedia.screenShare.audio.outputStream.getTracks().forEach(track => track.stop());
-        }
-        localMedia.screenShare.audio = undefined;
-    }
-
-    console.log('[CleanupMedia] All local media stopped');
-};
-
-/**
- * Expose localMedia for useWebexMedia to populate
- */
-export const getLocalMedia = () => localMedia;
+export { getLocalMedia } from './localMediaState';
 
 export const useWebexMeetings = () => {
     const meetingsStore = useMeetingsStore();
     const participantsStore = useParticipantsStore();
     const mediaStore = useMediaStore();
     const { getWebexInstance } = useWebex();
+    const webexMedia = useWebexMedia();
     const { setupMultistreamListeners } = useWebexMultistream();
+
+    const ensureLocalMediaStreams = async () => {
+        let microphone = mediaStore.localStreams.microphone;
+        let camera = mediaStore.localStreams.camera;
+
+        const tasks = [];
+        if (!microphone) {
+            tasks.push(
+                webexMedia.createMicrophoneStream().catch((err) => {
+                    console.error('[JoinMeeting] Failed to create microphone stream:', err);
+                    throw err;
+                })
+            );
+        }
+
+        if (!camera) {
+            tasks.push(
+                webexMedia.createCameraStream().catch((err) => {
+                    console.error('[JoinMeeting] Failed to create camera stream:', err);
+                    throw err;
+                })
+            );
+        }
+
+        if (tasks.length) {
+            await Promise.all(tasks);
+            microphone = mediaStore.localStreams.microphone;
+            camera = mediaStore.localStreams.camera;
+        }
+
+        if (!microphone || !camera) {
+            throw new Error('Local media streams not ready');
+        }
+
+        return { microphone, camera };
+    };
 
     const syncMeetings = async () => {
         const webex = getWebexInstance();
@@ -113,12 +83,16 @@ export const useWebexMeetings = () => {
         }
 
         const meeting = meetingData.meeting;
-        const micStream = mediaStore.localStreams.microphone;
-        const camStream = mediaStore.localStreams.camera;
 
-        if (!micStream || !camStream) {
-            throw new Error('Local media streams not ready');
+        if (meetingData.state === MEETING_STATES.JOINED || meeting.state === MEETING_STATES.JOINED) {
+            console.log('[JoinMeeting] Meeting already joined, skipping joinWithMedia');
+            meetingsStore.setCurrentMeeting(meetingId);
+            return meeting;
         }
+
+        const { microphone: micStream, camera: camStream } = await ensureLocalMediaStreams();
+
+        meetingsStore.updateMeetingState(meetingId, MEETING_STATES.JOINING);
 
         console.log('Joining meeting:', meetingId);
 
@@ -520,6 +494,41 @@ export const useWebexMeetings = () => {
             if (payload.currentState) {
                 meetingsStore.updateMeetingState(meeting.id, payload.currentState);
             }
+        });
+
+        let hasHandledTermination = false;
+        const handleMeetingTermination = async (eventName, payload) => {
+            if (hasHandledTermination) {
+                return;
+            }
+
+            const meetingRecord = meetingsStore.getMeetingById(meeting.id);
+            if (meetingRecord?.state === MEETING_STATES.LEFT) {
+                console.log(`[Meeting] ${eventName} ignored - meeting already marked as left`);
+                return;
+            }
+
+            hasHandledTermination = true;
+            console.log(`[Meeting] ${eventName} received, cleaning up meeting`, payload);
+
+            meetingsStore.addNotification({
+                type: 'info',
+                message: 'Meeting has ended'
+            });
+
+            try {
+                await destroyMeeting(meeting.id);
+            } catch (err) {
+                console.error(`[Meeting] Failed to cleanup after ${eventName}:`, err);
+            }
+        };
+
+        meeting.on('meeting:ended', (payload) => {
+            return handleMeetingTermination('meeting:ended', payload);
+        });
+
+        meeting.on('meeting:destroyed', (payload) => {
+            return handleMeetingTermination('meeting:destroyed', payload);
         });
 
         // Network quality monitoring

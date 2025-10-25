@@ -3,9 +3,42 @@ import { setActivePinia, createPinia } from 'pinia';
 import { resetWebexInstance } from '@/composables/useWebex';
 import { MEETING_STATES } from '@/dicts/constants';
 
+vi.mock('@/composables/useWebexMedia', () => {
+    const createMicrophoneStream = vi.fn(async () => {
+        const { useMediaStore } = await import('@/storage/media');
+        const mediaStore = useMediaStore();
+        const stream = { id: 'mock-microphone-stream' };
+        mediaStore.setLocalStream('microphone', stream);
+        return stream;
+    });
+
+    const createCameraStream = vi.fn(async () => {
+        const { useMediaStore } = await import('@/storage/media');
+        const mediaStore = useMediaStore();
+        const stream = { id: 'mock-camera-stream' };
+        mediaStore.setLocalStream('camera', stream);
+        return stream;
+    });
+
+    const mocked = {
+        createMicrophoneStream,
+        createCameraStream,
+        toggleMicrophone: vi.fn(),
+        toggleCamera: vi.fn(),
+        stopAllLocalStreams: vi.fn(),
+        enumerateDevices: vi.fn(),
+    };
+
+    return {
+        useWebexMedia: () => mocked,
+        __webexMediaMocks: mocked,
+    };
+});
+
 describe('useWebexMeetings - leaveMeeting', () => {
     let originalWebex;
     let mockMeeting;
+    let meetingEventHandlers;
 
     beforeEach(() => {
         setActivePinia(createPinia());
@@ -17,12 +50,26 @@ describe('useWebexMeetings - leaveMeeting', () => {
             sipUri: 'test@example.com',
             destination: 'test@example.com',
             state: MEETING_STATES.JOINED,
+            joinWithMedia: vi.fn().mockResolvedValue(),
             leave: vi.fn().mockResolvedValue(),
             members: {
                 on: vi.fn(),
+                off: vi.fn()
             },
+            remoteMediaManager: {
+                stop: vi.fn().mockResolvedValue(),
+            },
+            off: vi.fn(),
             on: vi.fn(),
         };
+
+        meetingEventHandlers = {};
+        mockMeeting.on = vi.fn((event, handler) => {
+            if (!meetingEventHandlers[event]) {
+                meetingEventHandlers[event] = [];
+            }
+            meetingEventHandlers[event].push(handler);
+        });
 
         // Mock Webex SDK
         originalWebex = window.Webex;
@@ -191,6 +238,40 @@ describe('useWebexMeetings - leaveMeeting', () => {
         await expect(leaveMeeting('non-existent')).resolves.not.toThrow();
     });
 
+    it('creates local media streams when joining without pre-initialised media', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
+        const { __webexMediaMocks } = await import('@/composables/useWebexMedia');
+
+        const { initWebex } = useWebex();
+        const { joinMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
+
+        await initWebex('test-token');
+
+        mockMeeting.state = MEETING_STATES.IDLE;
+        meetingsStore.addMeeting(mockMeeting);
+        meetingsStore.updateMeetingState(mockMeeting.id, MEETING_STATES.LEFT);
+
+        mediaStore.clearLocalStreams();
+
+        await joinMeeting(mockMeeting.id);
+
+        expect(__webexMediaMocks.createMicrophoneStream).toHaveBeenCalled();
+        expect(__webexMediaMocks.createCameraStream).toHaveBeenCalled();
+        expect(mediaStore.localStreams.microphone).not.toBeNull();
+        expect(mediaStore.localStreams.camera).not.toBeNull();
+        expect(mockMeeting.joinWithMedia).toHaveBeenCalled();
+
+        const meetingData = meetingsStore.getMeetingById(mockMeeting.id);
+        expect(meetingData.state).toBe(MEETING_STATES.JOINED);
+        expect(meetingsStore.currentMeetingId).toBe(mockMeeting.id);
+    });
+
+
     it('updates pinned participant when receiving PIN_PARTICIPANT event', async () => {
         const { useWebex } = await import('@/composables/useWebex');
         const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
@@ -223,5 +304,84 @@ describe('useWebexMeetings - leaveMeeting', () => {
         });
 
         expect(participantsStore.pinnedParticipantId).toBeNull();
+    });
+
+    it('should clean up when meeting ends remotely', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings, getLocalMedia } = await import('@/composables/useWebexMeetings');
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
+        const { useParticipantsStore } = await import('@/storage/participants');
+
+        const { initWebex } = useWebex();
+        const { createMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
+        const participantsStore = useParticipantsStore();
+
+        await initWebex('test-token');
+        await createMeeting('test@example.com');
+
+        meetingsStore.setCurrentMeeting('meeting-123');
+        meetingsStore.setModerator(true);
+        meetingsStore.updateMeetingState('meeting-123', MEETING_STATES.JOINED);
+
+        const micTrack = { stop: vi.fn() };
+        const camTrack = { stop: vi.fn() };
+        const micStream = {
+            getTracks: vi.fn(() => [micTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => [])
+            }
+        };
+        const camStream = {
+            getTracks: vi.fn(() => [camTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => [])
+            }
+        };
+
+        mediaStore.setLocalStream('microphone', micStream);
+        mediaStore.setLocalStream('camera', camStream);
+
+        const localMedia = getLocalMedia();
+        localMedia.microphoneStream = micStream;
+        localMedia.cameraStream = camStream;
+
+        mediaStore.addRemotePane({ id: 'pane-1', stream: {} });
+        mediaStore.setMediaState('audioMuted', true);
+        mediaStore.setMediaState('videoMuted', true);
+
+        participantsStore.addParticipant({
+            id: 'user-1',
+            name: 'Remote User',
+            status: 'IN_MEETING'
+        });
+
+        const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
+        const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
+        const clearParticipantsSpy = vi.spyOn(participantsStore, 'clearParticipants');
+        const addNotificationSpy = vi.spyOn(meetingsStore, 'addNotification');
+
+        const endedHandlers = meetingEventHandlers['meeting:ended'];
+        expect(Array.isArray(endedHandlers) && endedHandlers.length).toBeTruthy();
+
+        await endedHandlers[0]({ reason: 'remoteLeft' });
+
+        expect(clearLocalStreamsSpy).toHaveBeenCalled();
+        expect(clearRemotePanesSpy).toHaveBeenCalled();
+        expect(clearParticipantsSpy).toHaveBeenCalled();
+        expect(meetingsStore.getMeetingById('meeting-123').state).toBe(MEETING_STATES.LEFT);
+        expect(meetingsStore.currentMeetingId).toBeNull();
+        expect(meetingsStore.isModerator).toBe(false);
+        expect(mediaStore.mediaStates.audioMuted).toBe(false);
+        expect(mediaStore.mediaStates.videoMuted).toBe(false);
+        expect(mediaStore.remotePanes).toHaveLength(0);
+        expect(participantsStore.participants.size).toBe(0);
+        expect(micTrack.stop).toHaveBeenCalled();
+        expect(camTrack.stop).toHaveBeenCalled();
+        expect(addNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({
+            message: 'Meeting has ended'
+        }));
     });
 });
