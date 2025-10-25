@@ -4,7 +4,6 @@ import { createPinia, setActivePinia } from 'pinia';
 import VideoLayout from '@components/video/VideoLayout.vue';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import { useParticipantsStore } from '@/storage/participants.js';
-import IncomingCallToast from "@components/IncomingCallToast.vue";
 
 describe('VideoLayout', () => {
     let meetingsStore;
