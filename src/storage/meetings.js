@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import {ref, computed, reactive} from 'vue';
-import { LAYOUTS } from '../dicts/constants';
+import { LAYOUTS } from '@/dicts/constants';
 
 const meetingsMap = new Map();
 
@@ -8,11 +8,11 @@ export const useMeetingsStore = defineStore('meetings', () => {
     const currentMeetingId = ref(null);
     const currentLayout = ref(LAYOUTS.ALL_EQUAL);
     const participants = reactive({});
-    const pinnedParticipantId = ref(null);
     const isModerator = ref(false);
     const networkQuality = ref('good'); // 'good', 'poor', 'unknown'
     const meetingLocked = ref(false);
     const meetingNotifications = ref([]);
+    const incomingCall = ref(null); // { meetingId, callerName, meetingDetails, timestamp }
 
     const currentMeeting = computed(() => {
         if (!currentMeetingId.value) {
@@ -92,7 +92,6 @@ export const useMeetingsStore = defineStore('meetings', () => {
         meetingsMap.clear();
         currentMeetingId.value = null;
         currentLayout.value = LAYOUTS.ALL_EQUAL;
-        pinnedParticipantId.value = null;
         isModerator.value = false;
         networkQuality.value = 'good';
         meetingLocked.value = false;
@@ -136,20 +135,15 @@ export const useMeetingsStore = defineStore('meetings', () => {
         meetingNotifications.value = [];
     };
 
-    const pinParticipant = (memberId) => {
-        pinnedParticipantId.value = memberId;
+    const setIncomingCall = (callData) => {
+        incomingCall.value = {
+            ...callData,
+            timestamp: Date.now()
+        };
     };
 
-    const unpinParticipant = () => {
-        pinnedParticipantId.value = null;
-    };
-
-    const togglePinParticipant = (memberId) => {
-        if (pinnedParticipantId.value === memberId) {
-            unpinParticipant();
-        } else {
-            pinParticipant(memberId);
-        }
+    const clearIncomingCall = () => {
+        incomingCall.value = null;
     };
 
     return {
@@ -157,11 +151,11 @@ export const useMeetingsStore = defineStore('meetings', () => {
         currentLayout,
         currentMeeting,
         meetingsList,
-        pinnedParticipantId,
         isModerator,
         networkQuality,
         meetingLocked,
         meetingNotifications,
+        incomingCall,
         addMeeting,
         removeMeeting,
         setCurrentMeeting,
@@ -173,14 +167,13 @@ export const useMeetingsStore = defineStore('meetings', () => {
         getParticipant,
         removeParticipant,
         participants,
-        pinParticipant,
-        unpinParticipant,
-        togglePinParticipant,
         setModerator,
         setNetworkQuality,
         setMeetingLocked,
         addNotification,
         removeNotification,
         clearNotifications,
+        setIncomingCall,
+        clearIncomingCall,
     };
 });

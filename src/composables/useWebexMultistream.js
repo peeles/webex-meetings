@@ -1,5 +1,5 @@
-import { useMediaStore } from '../storage/media';
-import { useMeetingsStore } from '../storage/meetings';
+import { useMediaStore } from '@/storage/media';
+import { useMeetingsStore } from '@/storage/meetings';
 
 export const useWebexMultistream = () => {
     const mediaStore = useMediaStore();

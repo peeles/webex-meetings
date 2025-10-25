@@ -2,7 +2,7 @@
     <MeetingLayout>
         <div class="relative w-full h-screen overflow-hidden">
             <div class="absolute inset-0">
-                <VideoGrid
+                <VideoLayout
                     :panes="mediaStore.remotePanes"
                     :local-stream="mediaStore.localStreams.camera?.outputStream"
                     :layout="meetingsStore.currentLayout"
@@ -39,7 +39,7 @@ import { useMeetingsStore } from '../storage/meetings';
 import { useWebexMeetings } from '../composables/useWebexMeetings';
 import { useWebexMedia } from '../composables/useWebexMedia';
 import MeetingLayout from '../components/layouts/MeetingLayout.vue';
-import VideoGrid from '@components/video/VideoGrid.vue';
+import VideoLayout from '@components/video/VideoLayout.vue';
 import MeetingToolbar from '@components/meeting/MeetingToolbar.vue';
 import ParticipantList from '@components/participants/ParticipantList.vue';
 

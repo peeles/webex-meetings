@@ -82,17 +82,17 @@ const visiblePanes = computed(() => {
 });
 
 const pinnedParticipant = computed(() => {
-    if (!meetingsStore.pinnedParticipantId) {
+    if (!participantsStore.pinnedParticipantId) {
         return null;
     }
-    return visiblePanes.value.find(p => p.memberId === meetingsStore.pinnedParticipantId);
+    return visiblePanes.value.find(p => p.memberId === participantsStore.pinnedParticipantId);
 });
 
 const unpinnedPanes = computed(() => {
-    if (!meetingsStore.pinnedParticipantId) {
+    if (!participantsStore.pinnedParticipantId) {
         return visiblePanes.value;
     }
-    return visiblePanes.value.filter(p => p.memberId !== meetingsStore.pinnedParticipantId);
+    return visiblePanes.value.filter(p => p.memberId !== participantsStore.pinnedParticipantId);
 });
 
 const getParticipantName = (memberId) => {
@@ -101,13 +101,12 @@ const getParticipantName = (memberId) => {
 };
 
 const handlePin = async (memberId) => {
-    // Only allow moderators to pin
     if (!meetingsStore.isModerator) {
         console.warn('Only moderators can pin participants');
         return;
     }
 
-    meetingsStore.pinParticipant(memberId);
+    participantsStore.pinParticipant(memberId);
 
     // Broadcast to all participants
     const { useWebexMeetings } = await import('../../composables/useWebexMeetings.js');
@@ -119,13 +118,12 @@ const handlePin = async (memberId) => {
 };
 
 const handleUnpin = async () => {
-    // Only allow moderators to unpin
     if (!meetingsStore.isModerator) {
         console.warn('Only moderators can unpin participants');
         return;
     }
 
-    meetingsStore.unpinParticipant();
+    participantsStore.unpinParticipant();
 
     // Broadcast to all participants
     const { useWebexMeetings } = await import('../../composables/useWebexMeetings.js');

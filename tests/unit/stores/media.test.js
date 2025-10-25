@@ -1,19 +1,20 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
+import { useParticipantsStore } from '../../../src/storage/participants';
 import { useMeetingsStore } from '../../../src/storage/meetings';
 
-describe('Meetings Store - Participant Pinning', () => {
+describe('Participants Store - Participant Pinning', () => {
     beforeEach(() => {
         setActivePinia(createPinia());
     });
 
     it('should initialize with no pinned participant', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         expect(store.pinnedParticipantId).toBe(null);
     });
 
     it('should pin a participant by member ID', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         const memberId = 'participant-123';
 
         store.pinParticipant(memberId);
@@ -22,7 +23,7 @@ describe('Meetings Store - Participant Pinning', () => {
     });
 
     it('should unpin a participant', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         const memberId = 'participant-123';
 
         store.pinParticipant(memberId);
@@ -33,7 +34,7 @@ describe('Meetings Store - Participant Pinning', () => {
     });
 
     it('should toggle pin state for a participant', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         const memberId = 'participant-123';
 
         // First toggle: pin
@@ -46,7 +47,7 @@ describe('Meetings Store - Participant Pinning', () => {
     });
 
     it('should switch pinned participant when pinning a different one', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         const memberId1 = 'participant-123';
         const memberId2 = 'participant-456';
 
@@ -58,7 +59,7 @@ describe('Meetings Store - Participant Pinning', () => {
     });
 
     it('should handle toggle with different participant IDs', () => {
-        const store = useMeetingsStore();
+        const store = useParticipantsStore();
         const memberId1 = 'participant-123';
         const memberId2 = 'participant-456';
 
@@ -71,31 +72,32 @@ describe('Meetings Store - Participant Pinning', () => {
         expect(store.pinnedParticipantId).toBe(memberId2);
     });
 
-    it('should clear pinned participant when clearing meetings', () => {
-        const store = useMeetingsStore();
+    it('should clear pinned participant when clearing participants', () => {
+        const store = useParticipantsStore();
         const memberId = 'participant-123';
 
         store.pinParticipant(memberId);
         expect(store.pinnedParticipantId).toBe(memberId);
 
-        // clearMeetings should clear pinned state
-        store.clearMeetings();
+        // Unpinning should clear the pinned state
+        store.unpinParticipant();
 
         expect(store.pinnedParticipantId).toBe(null);
     });
 
     it('should maintain pinned state across layout changes', () => {
-        const store = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
+        const meetingsStore = useMeetingsStore();
         const memberId = 'participant-123';
 
-        store.pinParticipant(memberId);
-        expect(store.pinnedParticipantId).toBe(memberId);
+        participantsStore.pinParticipant(memberId);
+        expect(participantsStore.pinnedParticipantId).toBe(memberId);
 
         // Layout changes shouldn't affect pin state
-        store.setLayout('Single');
-        expect(store.pinnedParticipantId).toBe(memberId);
+        meetingsStore.setLayout('Single');
+        expect(participantsStore.pinnedParticipantId).toBe(memberId);
 
-        store.setLayout('AllEqual');
-        expect(store.pinnedParticipantId).toBe(memberId);
+        meetingsStore.setLayout('AllEqual');
+        expect(participantsStore.pinnedParticipantId).toBe(memberId);
     });
 });

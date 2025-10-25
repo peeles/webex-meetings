@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
-import VideoGrid from '@components/video/VideoGrid.vue';
+import VideoLayout from '@components/video/VideoLayout.vue';
 import { useMeetingsStore } from '../../../src/storage/meetings';
 import { useParticipantsStore } from '../../../src/storage/participants';
 
-describe('VideoGrid - Participant Pinning', () => {
+describe('VideoLayout - Participant Pinning', () => {
     beforeEach(() => {
         setActivePinia(createPinia());
     });
 
     it('should render in normal mode when no participant is pinned', () => {
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
                 layout: 'AllEqual'
@@ -43,14 +43,14 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
             }
         });
 
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
 
         // Find the main area (flex-1)
@@ -59,7 +59,7 @@ describe('VideoGrid - Participant Pinning', () => {
     });
 
     it('should switch back to normal mode when unpinning', async () => {
-        const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         const mockPanes = [
             {
@@ -70,7 +70,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -78,20 +78,18 @@ describe('VideoGrid - Participant Pinning', () => {
         });
 
         // Pin
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
 
         // Unpin
-        meetingsStore.unpinParticipant();
+        participantsStore.unpinParticipant();
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.grid').exists()).toBe(true);
         expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
     });
 
     it('should filter out panes with no source', async () => {
-        const meetingsStore = useMeetingsStore();
-
         const mockPanes = [
             {
                 id: 'pane-1',
@@ -107,7 +105,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -120,7 +118,7 @@ describe('VideoGrid - Participant Pinning', () => {
     });
 
     it('should apply correct grid classes for AllEqual layout', () => {
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
                 layout: 'AllEqual'
@@ -134,6 +132,7 @@ describe('VideoGrid - Participant Pinning', () => {
 
     it('should handle pin events from VideoPane', async () => {
         const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         // Set moderator status to allow pinning
         meetingsStore.setModerator(true);
@@ -147,7 +146,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -159,11 +158,12 @@ describe('VideoGrid - Participant Pinning', () => {
         await videoPane.vm.$emit('pin', 'participant-123');
         await wrapper.vm.$nextTick();
 
-        expect(meetingsStore.pinnedParticipantId).toBe('participant-123');
+        expect(participantsStore.pinnedParticipantId).toBe('participant-123');
     });
 
     it('should handle unpin events from VideoPane', async () => {
         const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         // Set moderator status to allow unpinning
         meetingsStore.setModerator(true);
@@ -177,7 +177,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -185,7 +185,7 @@ describe('VideoGrid - Participant Pinning', () => {
         });
 
         // First pin
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
 
         // Then unpin
@@ -193,6 +193,6 @@ describe('VideoGrid - Participant Pinning', () => {
         await videoPane.vm.$emit('unpin');
         await wrapper.vm.$nextTick();
 
-        expect(meetingsStore.pinnedParticipantId).toBe(null);
+        expect(participantsStore.pinnedParticipantId).toBe(null);
     });
 });

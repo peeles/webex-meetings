@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '../storage/auth';
-import HomePage from '../views/HomeScreen.vue';
-import MeetingPage from '../views/MeetingScreen.vue';
+import { useAuthStore } from '@/storage/auth';
+import HomePage from '@/views/HomeScreen.vue';
+import MeetingPage from '@/views/MeetingScreen.vue';
 
 const routes = [
     {
