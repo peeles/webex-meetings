@@ -65,6 +65,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import { getStateLabel } from '@/utils/helpers.js';
+import {PANE_SIZES, SOURCE_STATES} from "@/dicts/constants.js";
 
 const meetingsStore = useMeetingsStore();
 
@@ -79,7 +80,8 @@ const props = defineProps({
     },
     sourceState: {
         type: String,
-        default: 'live'
+        default: 'live',
+        validator: (val) => Object.values(SOURCE_STATES).includes(val)
     },
     isLocal: {
         type: Boolean,
@@ -87,7 +89,8 @@ const props = defineProps({
     },
     size: {
         type: String,
-        default: 'medium'
+        default: 'medium',
+        validator: (val) => Object.values(PANE_SIZES).includes(val)
     },
     memberId: {
         type: String,
@@ -100,7 +103,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['pin', 'unpin']);
-
 const videoEl = ref(null);
 
 const isModerator = computed(() => meetingsStore.isModerator);
@@ -119,14 +121,6 @@ onMounted(() => {
     if (videoEl.value && props.stream) {
         videoEl.value.srcObject = props.stream;
     }
-
-    // Debug pin button visibility
-    console.log('VideoPane mounted:', {
-        memberId: props.memberId,
-        isLocal: props.isLocal,
-        isModerator: isModerator.value,
-        showPinButton: !props.isLocal && props.memberId && isModerator.value
-    });
 });
 
 // Watch for stream changes
