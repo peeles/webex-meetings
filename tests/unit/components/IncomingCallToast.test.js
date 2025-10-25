@@ -137,8 +137,14 @@ describe('IncomingCallToast', () => {
         await wrapper.vm.$nextTick();
 
         // Should emit timeout and decline
-        expect(wrapper.emitted('timeout')).toBeTruthy();
-        expect(wrapper.emitted('decline')).toBeTruthy();
+        const timeoutEvents = wrapper.emitted('timeout') || [];
+        const declineEvents = wrapper.emitted('decline') || [];
+
+        expect(timeoutEvents).toHaveLength(1);
+        expect(timeoutEvents[0]).toEqual(['meeting-123']);
+
+        expect(declineEvents).toHaveLength(1);
+        expect(declineEvents[0]).toEqual(['meeting-123']);
     });
 
     it('displays unknown caller when name is not provided', () => {

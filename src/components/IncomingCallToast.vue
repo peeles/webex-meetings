@@ -125,7 +125,7 @@ const startTimer = () => {
 
         if (remainingTime.value <= 0) {
             clearInterval(timerInterval);
-            emit('timeout');
+            emit('timeout', props.meetingId);
             handleDecline();
         }
     }, 1000);

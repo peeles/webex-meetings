@@ -1,7 +1,6 @@
 <template>
     <RouterView />
 
-    <!-- Incoming Call Toast -->
     <IncomingCallToast
         :is-visible="!!meetingsStore.incomingCall"
         :caller-name="meetingsStore.incomingCall?.callerName"
@@ -9,7 +8,7 @@
         :meeting-id="meetingsStore.incomingCall?.meetingId"
         @answer="handleAnswerCall"
         @decline="handleDeclineCall"
-        @timeout="handleDeclineCall"
+        @timeout="handleTimeoutCall"
     />
 </template>
 
@@ -39,13 +38,22 @@ onMounted(async () => {
 const handleAnswerCall = async (meetingId) => {
     try {
         await answerIncomingCall(meetingId);
-        router.push(`/meeting/${meetingId}`);
+        await router.push(`/meeting/${meetingId}`);
     } catch (err) {
         console.error('Failed to answer call:', err);
     }
 };
 
 const handleDeclineCall = async (meetingId) => {
-    await declineIncomingCall(meetingId);
+    const targetMeetingId = meetingId ?? meetingsStore.incomingCall?.meetingId;
+    if (!targetMeetingId) {
+        return;
+    }
+
+    await declineIncomingCall(targetMeetingId);
+};
+
+const handleTimeoutCall = async (meetingId) => {
+    await handleDeclineCall(meetingId);
 };
 </script>
