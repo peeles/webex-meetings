@@ -14,14 +14,19 @@ describe('IncomingCallToast', () => {
         vi.useRealTimers();
     });
 
+    const mountComponent = (props, slots) => {
+        return mount(IncomingCallToast, {
+            props: props,
+            slots: slots,
+        })
+    };
+
     it('renders when visible', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         expect(wrapper.find('.fixed.bottom-6.right-6').exists()).toBe(true);
@@ -31,26 +36,22 @@ describe('IncomingCallToast', () => {
     });
 
     it('does not render when not visible', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: false,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: false,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         expect(wrapper.find('.fixed.bottom-6.right-6').exists()).toBe(false);
     });
 
     it('emits answer event when answer button clicked', async () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         const answerButton = wrapper.findAll('button').find(btn =>
@@ -64,13 +65,11 @@ describe('IncomingCallToast', () => {
     });
 
     it('emits decline event when decline button clicked', async () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         const declineButton = wrapper.findAll('button').find(btn =>
@@ -84,15 +83,13 @@ describe('IncomingCallToast', () => {
     });
 
     it('shows countdown timer', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123',
-                autoDeclineTime: 30,
-                showTimer: true
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
+            autoDeclineTime: 30,
+            showTimer: true
         });
 
         expect(wrapper.text()).toContain('Auto-decline in');
@@ -100,28 +97,24 @@ describe('IncomingCallToast', () => {
     });
 
     it('hides timer when showTimer is false', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123',
-                showTimer: false
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
+            showTimer: false
         });
 
         expect(wrapper.text()).not.toContain('Auto-decline in');
     });
 
     it('counts down and emits timeout after autoDeclineTime', async () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123',
-                autoDeclineTime: 5
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
+            autoDeclineTime: 5,
         });
 
         // Initially shows 5 seconds
@@ -148,13 +141,11 @@ describe('IncomingCallToast', () => {
     });
 
     it('displays unknown caller when name is not provided', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: '',
-                meetingDetails: '',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: '',
+            meetingDetails: '',
+            meetingId: 'meeting-123',
         });
 
         expect(wrapper.text()).toContain('Unknown');
@@ -162,30 +153,25 @@ describe('IncomingCallToast', () => {
 
     it('handles long caller names gracefully', () => {
         const longName = 'Very Long Name That Should Be Truncated Properly';
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: longName,
-                meetingDetails: 'test@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: longName,
+            meetingDetails: 'test@example.com',
+            meetingId: 'meeting-123'
         });
 
         expect(wrapper.text()).toContain(longName);
-        // Check for truncate class
         const nameElement = wrapper.find('.truncate');
         expect(nameElement.exists()).toBe(true);
     });
 
     it('stops timer when component unmounts', async () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123',
-                autoDeclineTime: 30
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
+            autoDeclineTime: 30,
         });
 
         // Timer should be running
@@ -204,14 +190,12 @@ describe('IncomingCallToast', () => {
     });
 
     it('restarts timer when becoming visible', async () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: false,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123',
-                autoDeclineTime: 5
-            }
+        const wrapper = mountComponent({
+            isVisible: false,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
+            autoDeclineTime: 5,
         });
 
         // Make visible
@@ -237,13 +221,11 @@ describe('IncomingCallToast', () => {
     });
 
     it('renders with correct CSS classes for styling', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123',
         });
 
         const container = wrapper.find('.fixed.bottom-6.right-6');
@@ -254,13 +236,11 @@ describe('IncomingCallToast', () => {
     });
 
     it('answer button has correct styling', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         const answerButton = wrapper.findAll('button').find(btn =>
@@ -272,13 +252,11 @@ describe('IncomingCallToast', () => {
     });
 
     it('decline button has correct styling', () => {
-        const wrapper = mount(IncomingCallToast, {
-            props: {
-                isVisible: true,
-                callerName: 'John Doe',
-                meetingDetails: 'john@example.com',
-                meetingId: 'meeting-123'
-            }
+        const wrapper = mountComponent({
+            isVisible: true,
+            callerName: 'John Doe',
+            meetingDetails: 'john@example.com',
+            meetingId: 'meeting-123'
         });
 
         const declineButton = wrapper.findAll('button').find(btn =>

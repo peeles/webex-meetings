@@ -1,21 +1,34 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
+import { useMeetingsStore } from '@/storage/meetings.js';
+import { useParticipantsStore } from '@/storage/participants.js';
 import VideoLayout from '@components/video/VideoLayout.vue';
-import { useMeetingsStore } from '../../../src/storage/meetings';
-import { useParticipantsStore } from '../../../src/storage/participants';
 
 describe('VideoLayout - Participant Pinning', () => {
     beforeEach(() => {
         setActivePinia(createPinia());
     });
 
+    const mountComponent = (props) => {
+        return mount(VideoLayout, {
+            props: props,
+        })
+    };
+
+    const mockPanes = [
+        {
+            id: 'pane-1',
+            stream: new MediaStream(),
+            memberId: 'participant-123',
+            sourceState: 'live'
+        }
+    ];
+
     it('should render in normal mode when no participant is pinned', () => {
-        const wrapper = mount(VideoLayout, {
-            props: {
-                panes: [],
-                layout: 'AllEqual'
-            }
+        const wrapper = mountComponent({
+            panes: [],
+            layout: 'AllEqual'
         });
 
         // Check for normal grid layout
@@ -24,7 +37,6 @@ describe('VideoLayout - Participant Pinning', () => {
     });
 
     it('should display pinned participant in main area', async () => {
-        const meetingsStore = useMeetingsStore();
         const participantsStore = useParticipantsStore();
 
         // Add participant to store
@@ -34,20 +46,9 @@ describe('VideoLayout - Participant Pinning', () => {
             status: 'IN_MEETING'
         });
 
-        const mockPanes = [
-            {
-                id: 'pane-1',
-                stream: new MediaStream(),
-                memberId: 'participant-123',
-                sourceState: 'live'
-            }
-        ];
-
-        const wrapper = mount(VideoLayout, {
-            props: {
-                panes: mockPanes,
-                layout: 'AllEqual'
-            }
+        const wrapper = mountComponent({
+            panes: mockPanes,
+            layout: 'AllEqual'
         });
 
         participantsStore.pinParticipant('participant-123');
@@ -60,15 +61,6 @@ describe('VideoLayout - Participant Pinning', () => {
 
     it('should switch back to normal mode when unpinning', async () => {
         const participantsStore = useParticipantsStore();
-
-        const mockPanes = [
-            {
-                id: 'pane-1',
-                stream: new MediaStream(),
-                memberId: 'participant-123',
-                sourceState: 'live'
-            }
-        ];
 
         const wrapper = mount(VideoLayout, {
             props: {
@@ -137,15 +129,6 @@ describe('VideoLayout - Participant Pinning', () => {
         // Set moderator status to allow pinning
         meetingsStore.setModerator(true);
 
-        const mockPanes = [
-            {
-                id: 'pane-1',
-                stream: new MediaStream(),
-                memberId: 'participant-123',
-                sourceState: 'live'
-            }
-        ];
-
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
@@ -167,15 +150,6 @@ describe('VideoLayout - Participant Pinning', () => {
 
         // Set moderator status to allow unpinning
         meetingsStore.setModerator(true);
-
-        const mockPanes = [
-            {
-                id: 'pane-1',
-                stream: new MediaStream(),
-                memberId: 'participant-123',
-                sourceState: 'live'
-            }
-        ];
 
         const wrapper = mount(VideoLayout, {
             props: {

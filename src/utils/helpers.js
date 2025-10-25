@@ -19,3 +19,11 @@ export const getStateLabel = (state) => {
 export const getDeviceLabel = (device) => {
     return device.label || `${device.kind} ${device.deviceId.slice(0, 8)}`;
 };
+
+export const normaliseStatusText = (status) => {
+    if (!status) {
+        return '';
+    }
+
+    return String(status).replace(/_/g, ' ').toLowerCase();
+};

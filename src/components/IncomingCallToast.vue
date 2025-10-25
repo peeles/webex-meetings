@@ -11,12 +11,10 @@
             v-if="isVisible"
             class="fixed bottom-6 right-6 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-80"
         >
-            <!-- Header -->
             <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-3">
-                    <!-- Ringing icon -->
                     <div class="animate-bounce">
-                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-blue-500" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
                     </div>
@@ -31,14 +29,12 @@
                 </div>
             </div>
 
-            <!-- Meeting details -->
             <div v-if="meetingDetails" class="mb-4 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs">
                 <p class="text-gray-600 dark:text-gray-300 truncate">
                     {{ meetingDetails }}
                 </p>
             </div>
 
-            <!-- Action buttons -->
             <div class="flex gap-2">
                 <button
                     @click="handleAnswer"
@@ -60,7 +56,6 @@
                 </button>
             </div>
 
-            <!-- Auto-decline timer -->
             <div v-if="showTimer" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                     <span>Auto-decline in</span>
@@ -78,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onUnmounted } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 
 const props = defineProps({
     isVisible: {
