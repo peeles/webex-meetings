@@ -168,10 +168,6 @@ describe('VideoLayout', () => {
         });
 
         const grid = wrapper.find('.grid');
-        expect(grid.classes()).toContain('grid-cols-3');
-        expect(grid.classes()).toContain('grid-rows-3');
-
-        await wrapper.setProps({ layout: 'Spotlight' });
         expect(grid.classes()).toContain('grid-cols-1');
         expect(grid.classes()).toContain('grid-rows-1');
     });

@@ -22,7 +22,7 @@
 
         <div
             v-else
-            class="grid gap-2 p-4 w-full h-full"
+            class="flex flex-col items-center justify-center grid gap-2 p-4 w-full h-full"
             :class="gridClasses"
             data-testid="video-grid"
         >
@@ -35,7 +35,7 @@
                 :member-id="pane.memberId"
                 :is-pinned="false"
                 :is-local="false"
-                size="medium"
+                :size="'medium'"
                 @pin="handlePin"
                 @unpin="handleUnpin"
             />
@@ -67,10 +67,10 @@
             <div class="relative">
                 <VideoPane
                     :stream="localStream"
-                    participant-name="You"
-                    source-state="live"
+                    :participant-name="'You'"
+                    :source-state="'live'"
                     :is-local="true"
-                    size="small"
+                    :size="'medium'"
                     class="shadow-lg border border-white/10"
                 />
                 <button
@@ -113,13 +113,23 @@ const meetingsStore = useMeetingsStore();
 const MAX_GRID_TILES = 9;
 const MAX_REMOTE_WITHOUT_OVERFLOW_TILE = MAX_GRID_TILES - 1;
 
-const layoutClassMap = {
-    AllEqual: 'grid-cols-3 grid-rows-3',
-    Spotlight: 'grid-cols-1 grid-rows-1'
-};
-
 const gridClasses = computed(() => {
-    return layoutClassMap[props.layout] || layoutClassMap.AllEqual;
+    switch (remotePanes.value.length) {
+        case 2:
+            return 'grid-cols-2 grid-rows-1';
+        case 3:
+        case 4:
+            return 'grid-cols-2 grid-rows-2';
+        case 5:
+        case 6:
+            return 'grid-cols-3 grid-rows-2';
+        case 7:
+        case 8:
+        case 9:
+            return 'grid-cols-3 grid-rows-3';
+        default:
+            return 'grid-cols-1 grid-rows-1';
+    }
 });
 
 const remotePanes = computed(() => {

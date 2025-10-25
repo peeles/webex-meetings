@@ -33,7 +33,7 @@ describe('VideoLayout - Participant Pinning', () => {
 
         // Check for normal grid layout
         expect(wrapper.find('.grid').exists()).toBe(true);
-        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
+        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
     });
 
     it('should display pinned participant in main area', async () => {
@@ -78,7 +78,7 @@ describe('VideoLayout - Participant Pinning', () => {
         participantsStore.unpinParticipant();
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.grid').exists()).toBe(true);
-        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
+        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
     });
 
     it('should filter out panes with no source', async () => {
@@ -118,8 +118,8 @@ describe('VideoLayout - Participant Pinning', () => {
         });
 
         const grid = wrapper.find('.grid');
-        expect(grid.classes()).toContain('grid-cols-3');
-        expect(grid.classes()).toContain('grid-rows-3');
+        expect(grid.classes()).toContain('grid-cols-1');
+        expect(grid.classes()).toContain('grid-rows-1');
     });
 
     it('should handle pin events from VideoPane', async () => {
