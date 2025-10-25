@@ -458,9 +458,9 @@ export const useWebexMeetings = () => {
                 if (event.type === 'PIN_PARTICIPANT') {
                     console.log('Received pin event:', event.data);
                     if (event.data.memberId) {
-                        meetingsStore.pinParticipant(event.data.memberId);
+                        participantsStore.pinParticipant(event.data.memberId);
                     } else {
-                        meetingsStore.unpinParticipant();
+                        participantsStore.unpinParticipant();
                     }
                 }
             } catch (err) {
