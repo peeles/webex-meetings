@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, markRaw } from 'vue';
 import { LAYOUTS } from '@/dicts/constants';
 
 export const useMeetingsStore = defineStore('meetings', () => {
@@ -30,7 +30,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
             sipUri: meeting.sipUri,
             destination: meeting.destination,
             state: meeting.state,
-            meeting // NOT reactive
+            meeting: markRaw(meeting) // Preserve SDK instance methods
         });
     };
 

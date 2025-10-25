@@ -36,7 +36,7 @@ describe('Meeting Flow Integration', () => {
         // 1. Authenticate
         await initialiseWithToken('test-token');
 
-        const { useAuthStore } = await import('@/storage/Auth');
+        const { useAuthStore } = await import('@/storage/auth');
         const authStore = useAuthStore();
         expect(authStore.isRegistered).toBe(true);
     });
