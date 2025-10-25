@@ -190,4 +190,38 @@ describe('useWebexMeetings - leaveMeeting', () => {
         // Should not throw when leaving non-existent meeting
         await expect(leaveMeeting('non-existent')).resolves.not.toThrow();
     });
+
+    it('updates pinned participant when receiving PIN_PARTICIPANT event', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useParticipantsStore } = await import('@/storage/participants');
+
+        const { initWebex } = useWebex();
+        const { createMeeting } = useWebexMeetings();
+        const participantsStore = useParticipantsStore();
+
+        await initWebex('test-token');
+
+        await createMeeting('test@example.com');
+
+        const pinEventHandler = mockMeeting.on.mock.calls.find(([eventName]) =>
+            eventName === 'meeting:receiveCustomEvent'
+        )?.[1];
+
+        expect(typeof pinEventHandler).toBe('function');
+
+        pinEventHandler({
+            type: 'PIN_PARTICIPANT',
+            data: { memberId: 'member-123' }
+        });
+
+        expect(participantsStore.pinnedParticipantId).toBe('member-123');
+
+        pinEventHandler({
+            type: 'PIN_PARTICIPANT',
+            data: {}
+        });
+
+        expect(participantsStore.pinnedParticipantId).toBeNull();
+    });
 });

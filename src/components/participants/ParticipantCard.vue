@@ -28,6 +28,7 @@
 import { computed } from 'vue';
 import BaseAvatar from '../base/BaseAvatar.vue';
 import BaseBadge from '../base/BaseBadge.vue';
+import { normaliseStatusText } from '@/utils/helpers';
 
 const props = defineProps({
     participant: {
@@ -36,7 +37,5 @@ const props = defineProps({
     }
 });
 
-const statusText = computed(() => {
-    return props.participant.status.replace('_', ' ').toLowerCase();
-});
+const statusText = computed(() => normaliseStatusText(props.participant.status));
 </script>

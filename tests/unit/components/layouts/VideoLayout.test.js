@@ -15,13 +15,17 @@ describe('VideoLayout', () => {
         participantsStore = useParticipantsStore();
     });
 
+    const mountComponent = (props) => {
+        return mount(VideoLayout, {
+            props: props
+        })
+    };
+
     it('renders correctly with no panes', () => {
-        const wrapper = mount(VideoLayout, {
-            props: {
-                panes: [],
-                localStream: null,
-                activeSpeakerId: null,
-            },
+        const wrapper = mountComponent({
+            panes: [],
+            localStream: null,
+            activeSpeakerId: null,
         });
 
         // VideoLayout renders an empty grid when no panes
@@ -48,12 +52,10 @@ describe('VideoLayout', () => {
             },
         ];
 
-        const wrapper = mount(VideoLayout, {
-            props: {
-                panes,
-                localStream: new MediaStream(),
-                activeSpeakerId: 'user-1',
-            },
+        const wrapper = mountComponent({
+            panes,
+            localStream: new MediaStream(),
+            activeSpeakerId: 'user-1',
         });
 
         const videos = wrapper.findAll('video');
@@ -73,12 +75,10 @@ describe('VideoLayout', () => {
             },
         ];
 
-        const wrapper = mount(VideoLayout, {
-            props: {
-                panes,
-                localStream: new MediaStream(),
-                activeSpeakerId: 'user-1',
-            },
+        const wrapper = mountComponent({
+            panes,
+            localStream: new MediaStream(),
+            activeSpeakerId: 'user-1',
         });
 
         // Check that the participant name is rendered
