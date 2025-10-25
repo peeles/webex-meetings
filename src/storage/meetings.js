@@ -2,8 +2,9 @@ import { defineStore } from 'pinia';
 import { ref, computed, reactive, markRaw } from 'vue';
 import { LAYOUTS } from '@/dicts/constants';
 
+const meetingsMap = new Map();
+
 export const useMeetingsStore = defineStore('meetings', () => {
-    const meetingsMap = reactive(new Map());
     const currentMeetingId = ref(null);
     const currentLayout = ref(LAYOUTS.ALL_EQUAL);
     const participants = reactive({});
