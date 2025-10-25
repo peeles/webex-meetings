@@ -1,6 +1,40 @@
 // tests/setup.js
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faUsers,
+    faLock,
+    faUnlock,
+    faXmark,
+    faUserXmark,
+    faBookmark as faBookmarkSolid,
+    faPhone,
+    faPhoneSlash,
+} from '@fortawesome/free-solid-svg-icons';
+import { faBookmark as faBookmarkRegular } from '@fortawesome/free-regular-svg-icons';
+
+// Add Font Awesome icons to library
+library.add(
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faUsers,
+    faLock,
+    faUnlock,
+    faXmark,
+    faUserXmark,
+    faBookmarkSolid,
+    faBookmarkRegular,
+    faPhone,
+    faPhoneSlash,
+);
 
 // Define MediaStream IMMEDIATELY - before any imports
 if (!global.MediaStream) {
@@ -99,6 +133,11 @@ global.navigator.mediaDevices = {
 // Configure Vue Test Utils
 config.global.stubs = {
     teleport: true,
+};
+
+// Register Font Awesome component globally for tests
+config.global.components = {
+    'font-awesome-icon': FontAwesomeIcon,
 };
 
 // Reset modules between tests
