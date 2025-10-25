@@ -124,7 +124,7 @@ src/
 ├── components/          # Vue components
 │   ├── base/           # Reusable base components (buttons, inputs)
 │   ├── layouts/        # Layout components (HomeLayout, MeetingLayout)
-│   └── video/          # Video-specific components (VideoGrid, VideoPane)
+│   └── video/          # Video-specific components (VideoLayout, VideoPane)
 ├── composables/        # Composition API business logic
 │   ├── useWebex.js           # Core SDK singleton
 │   ├── useWebexAuth.js       # Authentication

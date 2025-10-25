@@ -50,7 +50,7 @@ describe('VideoLayout - Participant Pinning', () => {
             }
         });
 
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
 
         // Find the main area (flex-1)
@@ -59,7 +59,7 @@ describe('VideoLayout - Participant Pinning', () => {
     });
 
     it('should switch back to normal mode when unpinning', async () => {
-        const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         const mockPanes = [
             {
@@ -78,20 +78,18 @@ describe('VideoLayout - Participant Pinning', () => {
         });
 
         // Pin
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
 
         // Unpin
-        meetingsStore.unpinParticipant();
+        participantsStore.unpinParticipant();
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.grid').exists()).toBe(true);
         expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
     });
 
     it('should filter out panes with no source', async () => {
-        const meetingsStore = useMeetingsStore();
-
         const mockPanes = [
             {
                 id: 'pane-1',
@@ -134,6 +132,7 @@ describe('VideoLayout - Participant Pinning', () => {
 
     it('should handle pin events from VideoPane', async () => {
         const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         // Set moderator status to allow pinning
         meetingsStore.setModerator(true);
@@ -159,11 +158,12 @@ describe('VideoLayout - Participant Pinning', () => {
         await videoPane.vm.$emit('pin', 'participant-123');
         await wrapper.vm.$nextTick();
 
-        expect(meetingsStore.pinnedParticipantId).toBe('participant-123');
+        expect(participantsStore.pinnedParticipantId).toBe('participant-123');
     });
 
     it('should handle unpin events from VideoPane', async () => {
         const meetingsStore = useMeetingsStore();
+        const participantsStore = useParticipantsStore();
 
         // Set moderator status to allow unpinning
         meetingsStore.setModerator(true);
@@ -185,7 +185,7 @@ describe('VideoLayout - Participant Pinning', () => {
         });
 
         // First pin
-        meetingsStore.pinParticipant('participant-123');
+        participantsStore.pinParticipant('participant-123');
         await wrapper.vm.$nextTick();
 
         // Then unpin
@@ -193,6 +193,6 @@ describe('VideoLayout - Participant Pinning', () => {
         await videoPane.vm.$emit('unpin');
         await wrapper.vm.$nextTick();
 
-        expect(meetingsStore.pinnedParticipantId).toBe(null);
+        expect(participantsStore.pinnedParticipantId).toBe(null);
     });
 });
