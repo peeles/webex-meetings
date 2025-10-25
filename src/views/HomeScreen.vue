@@ -1,25 +1,25 @@
 <template>
-  <HomeLayout>
-    <div class="max-w-4xl mx-auto p-6 space-y-6">
-      <AuthForm v-if="!authStore.isRegistered" />
+    <HomeLayout>
+        <div class="max-w-4xl mx-auto p-6 space-y-6">
+            <AuthForm v-if="!authStore.isRegistered" />
 
-      <template v-else>
-        <MeetingCreator @create="handleCreateMeeting" />
+            <template v-else>
+                <MeetingCreator @create="handleCreateMeeting" />
 
-        <div v-if="meetingsStore.meetingsList.length" class="space-y-4">
-          <h2 class="text-xl font-semibold">Available Meetings</h2>
-          <MeetingListItem
-            v-for="meeting in meetingsStore.meetingsList"
-            :key="meeting.id"
-            :meeting="meeting"
-            @join="handleJoinMeeting"
-          />
+                <div v-if="meetingsStore.meetingsList.length" class="space-y-4">
+                    <h2 class="text-xl font-semibold">Available Meetings</h2>
+                    <MeetingListItem
+                        v-for="meeting in meetingsStore.meetingsList"
+                        :key="meeting.id"
+                        :meeting="meeting"
+                        @join="handleJoinMeeting"
+                    />
+                </div>
+
+                <EventsLog />
+            </template>
         </div>
-
-        <EventsLog />
-      </template>
-    </div>
-  </HomeLayout>
+    </HomeLayout>
 </template>
 
 <script setup>
@@ -40,17 +40,17 @@ const meetingsStore = useMeetingsStore();
 const { syncMeetings, createMeeting } = useWebexMeetings();
 
 onMounted(async () => {
-  if (authStore.isRegistered) {
-    await syncMeetings();
-  }
+    if (authStore.isRegistered) {
+        await syncMeetings();
+    }
 });
 
 const handleCreateMeeting = async (destination) => {
-  const meeting = await createMeeting(destination);
-  await router.push({ name: 'meeting', params: { id: meeting.id } });
+    const meeting = await createMeeting(destination);
+    await router.push({ name: 'meeting', params: { id: meeting.id } });
 };
 
 const handleJoinMeeting = (meetingId) => {
-  router.push({ name: 'meeting', params: { id: meetingId } });
+    router.push({ name: 'meeting', params: { id: meetingId } });
 };
 </script>

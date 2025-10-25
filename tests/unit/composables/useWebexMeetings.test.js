@@ -4,397 +4,409 @@ import { resetWebexInstance } from '@/composables/useWebex';
 import { MEETING_STATES } from '@/dicts/constants';
 
 vi.mock('@/composables/useWebexMedia', () => {
-  const createMicrophoneStream = vi.fn(async () => {
-    const { useMediaStore } = await import('@/storage/media');
-    const mediaStore = useMediaStore();
-    const stream = { id: 'mock-microphone-stream' };
-    mediaStore.setLocalStream('microphone', stream);
-    return stream;
-  });
+    const createMicrophoneStream = vi.fn(async () => {
+        const { useMediaStore } = await import('@/storage/media');
+        const mediaStore = useMediaStore();
+        const stream = { id: 'mock-microphone-stream' };
+        mediaStore.setLocalStream('microphone', stream);
+        return stream;
+    });
 
-  const createCameraStream = vi.fn(async () => {
-    const { useMediaStore } = await import('@/storage/media');
-    const mediaStore = useMediaStore();
-    const stream = { id: 'mock-camera-stream' };
-    mediaStore.setLocalStream('camera', stream);
-    return stream;
-  });
+    const createCameraStream = vi.fn(async () => {
+        const { useMediaStore } = await import('@/storage/media');
+        const mediaStore = useMediaStore();
+        const stream = { id: 'mock-camera-stream' };
+        mediaStore.setLocalStream('camera', stream);
+        return stream;
+    });
 
-  const mocked = {
-    createMicrophoneStream,
-    createCameraStream,
-    toggleMicrophone: vi.fn(),
-    toggleCamera: vi.fn(),
-    stopAllLocalStreams: vi.fn(),
-    enumerateDevices: vi.fn(),
-  };
+    const mocked = {
+        createMicrophoneStream,
+        createCameraStream,
+        toggleMicrophone: vi.fn(),
+        toggleCamera: vi.fn(),
+        stopAllLocalStreams: vi.fn(),
+        enumerateDevices: vi.fn(),
+    };
 
-  return {
-    useWebexMedia: () => mocked,
-    __webexMediaMocks: mocked,
-  };
+    return {
+        useWebexMedia: () => mocked,
+        __webexMediaMocks: mocked,
+    };
 });
 
 describe('useWebexMeetings - leaveMeeting', () => {
-  let originalWebex;
-  let mockMeeting;
-  let meetingEventHandlers;
+    let originalWebex;
+    let mockMeeting;
+    let meetingEventHandlers;
 
-  beforeEach(() => {
-    setActivePinia(createPinia());
-    resetWebexInstance();
+    beforeEach(() => {
+        setActivePinia(createPinia());
+        resetWebexInstance();
 
-    // Create mock meeting object
-    mockMeeting = {
-      id: 'meeting-123',
-      sipUri: 'test@example.com',
-      destination: 'test@example.com',
-      state: MEETING_STATES.JOINED,
-      joinWithMedia: vi.fn().mockResolvedValue(),
-      leave: vi.fn().mockResolvedValue(),
-      members: {
-        on: vi.fn(),
-        off: vi.fn(),
-      },
-      remoteMediaManager: {
-        stop: vi.fn().mockResolvedValue(),
-      },
-      off: vi.fn(),
-      on: vi.fn(),
-    };
+        // Create mock meeting object
+        mockMeeting = {
+            id: 'meeting-123',
+            sipUri: 'test@example.com',
+            destination: 'test@example.com',
+            state: MEETING_STATES.JOINED,
+            joinWithMedia: vi.fn().mockResolvedValue(),
+            leave: vi.fn().mockResolvedValue(),
+            members: {
+                on: vi.fn(),
+                off: vi.fn(),
+            },
+            remoteMediaManager: {
+                stop: vi.fn().mockResolvedValue(),
+            },
+            off: vi.fn(),
+            on: vi.fn(),
+        };
 
-    meetingEventHandlers = {};
-    mockMeeting.on = vi.fn((event, handler) => {
-      if (!meetingEventHandlers[event]) {
-        meetingEventHandlers[event] = [];
-      }
-      meetingEventHandlers[event].push(handler);
+        meetingEventHandlers = {};
+        mockMeeting.on = vi.fn((event, handler) => {
+            if (!meetingEventHandlers[event]) {
+                meetingEventHandlers[event] = [];
+            }
+            meetingEventHandlers[event].push(handler);
+        });
+
+        // Mock Webex SDK
+        originalWebex = window.Webex;
+        window.Webex = {
+            init: vi.fn(() => ({
+                once: vi.fn((event, callback) => {
+                    if (event === 'ready') {
+                        setTimeout(() => callback(), 0);
+                    }
+                }),
+                meetings: {
+                    register: vi.fn().mockResolvedValue(),
+                    create: vi.fn().mockResolvedValue(mockMeeting),
+                    syncMeetings: vi.fn().mockResolvedValue(),
+                    getAllMeetings: vi.fn().mockReturnValue({}),
+                    mediaHelpers: {
+                        createMicrophoneStream: vi.fn().mockResolvedValue({
+                            getTracks: () => [{ stop: vi.fn() }],
+                        }),
+                        createCameraStream: vi.fn().mockResolvedValue({
+                            getTracks: () => [{ stop: vi.fn() }],
+                        }),
+                        getDevices: vi.fn().mockResolvedValue([]),
+                    },
+                },
+            })),
+        };
     });
 
-    // Mock Webex SDK
-    originalWebex = window.Webex;
-    window.Webex = {
-      init: vi.fn(() => ({
-        once: vi.fn((event, callback) => {
-          if (event === 'ready') {
-            setTimeout(() => callback(), 0);
-          }
-        }),
-        meetings: {
-          register: vi.fn().mockResolvedValue(),
-          create: vi.fn().mockResolvedValue(mockMeeting),
-          syncMeetings: vi.fn().mockResolvedValue(),
-          getAllMeetings: vi.fn().mockReturnValue({}),
-          mediaHelpers: {
-            createMicrophoneStream: vi.fn().mockResolvedValue({
-              getTracks: () => [{ stop: vi.fn() }],
-            }),
-            createCameraStream: vi.fn().mockResolvedValue({
-              getTracks: () => [{ stop: vi.fn() }],
-            }),
-            getDevices: vi.fn().mockResolvedValue([]),
-          },
-        },
-      })),
-    };
-  });
-
-  afterEach(() => {
-    window.Webex = originalWebex;
-    resetWebexInstance();
-    vi.clearAllMocks();
-  });
-
-  it('should properly clean up all resources when leaving a meeting', async () => {
-    // Import modules after mocking
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-    const { useMeetingsStore } = await import('@/storage/meetings');
-    const { useMediaStore } = await import('@/storage/media');
-    const { useParticipantsStore } = await import('@/storage/participants');
-
-    const { initWebex } = useWebex();
-    const { leaveMeeting } = useWebexMeetings();
-    const meetingsStore = useMeetingsStore();
-    const mediaStore = useMediaStore();
-    const participantsStore = useParticipantsStore();
-
-    // Setup: Initialize Webex and add meeting
-    await initWebex('test-token');
-    meetingsStore.addMeeting(mockMeeting);
-    meetingsStore.setCurrentMeeting('meeting-123');
-    meetingsStore.setModerator(true);
-
-    // Add some test data to stores
-    mediaStore.setLocalStream('microphone', {
-      getTracks: () => [{ stop: vi.fn() }],
-    });
-    mediaStore.setLocalStream('camera', {
-      getTracks: () => [{ stop: vi.fn() }],
-    });
-    mediaStore.addRemotePane({ id: 'pane-1', stream: {} });
-    mediaStore.setMediaState('audioMuted', true);
-    mediaStore.setMediaState('videoMuted', true);
-    participantsStore.addParticipant({
-      id: 'user-1',
-      name: 'Test User',
-      status: 'IN_MEETING',
+    afterEach(() => {
+        window.Webex = originalWebex;
+        resetWebexInstance();
+        vi.clearAllMocks();
     });
 
-    // Spy on cleanup methods
-    const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
-    const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
-    const clearParticipantsSpy = vi.spyOn(
-      participantsStore,
-      'clearParticipants'
-    );
+    it('should properly clean up all resources when leaving a meeting', async () => {
+        // Import modules after mocking
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
+        const { useParticipantsStore } = await import('@/storage/participants');
 
-    // Act: Leave the meeting
-    await leaveMeeting('meeting-123');
+        const { initWebex } = useWebex();
+        const { leaveMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
+        const participantsStore = useParticipantsStore();
 
-    // Assert: Verify all cleanup happened
-    expect(clearLocalStreamsSpy).toHaveBeenCalled();
-    expect(mockMeeting.leave).toHaveBeenCalled();
-    expect(clearRemotePanesSpy).toHaveBeenCalled();
-    expect(clearParticipantsSpy).toHaveBeenCalled();
+        // Setup: Initialize Webex and add meeting
+        await initWebex('test-token');
+        meetingsStore.addMeeting(mockMeeting);
+        meetingsStore.setCurrentMeeting('meeting-123');
+        meetingsStore.setModerator(true);
 
-    // Verify meeting state updated
-    const meetingData = meetingsStore.getMeetingById('meeting-123');
-    expect(meetingData.state).toBe(MEETING_STATES.LEFT);
+        // Add some test data to stores
+        mediaStore.setLocalStream('microphone', {
+            getTracks: () => [{ stop: vi.fn() }],
+        });
+        mediaStore.setLocalStream('camera', {
+            getTracks: () => [{ stop: vi.fn() }],
+        });
+        mediaStore.addRemotePane({ id: 'pane-1', stream: {} });
+        mediaStore.setMediaState('audioMuted', true);
+        mediaStore.setMediaState('videoMuted', true);
+        participantsStore.addParticipant({
+            id: 'user-1',
+            name: 'Test User',
+            status: 'IN_MEETING',
+        });
 
-    // Verify current meeting cleared
-    expect(meetingsStore.currentMeetingId).toBeNull();
+        // Spy on cleanup methods
+        const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
+        const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
+        const clearParticipantsSpy = vi.spyOn(
+            participantsStore,
+            'clearParticipants'
+        );
 
-    // Verify moderator status reset
-    expect(meetingsStore.isModerator).toBe(false);
+        // Act: Leave the meeting
+        await leaveMeeting('meeting-123');
 
-    // Verify media states reset
-    expect(mediaStore.mediaStates.audioMuted).toBe(false);
-    expect(mediaStore.mediaStates.videoMuted).toBe(false);
+        // Assert: Verify all cleanup happened
+        expect(clearLocalStreamsSpy).toHaveBeenCalled();
+        expect(mockMeeting.leave).toHaveBeenCalled();
+        expect(clearRemotePanesSpy).toHaveBeenCalled();
+        expect(clearParticipantsSpy).toHaveBeenCalled();
 
-    // Verify remote panes cleared
-    expect(mediaStore.remotePanes).toHaveLength(0);
+        // Verify meeting state updated
+        const meetingData = meetingsStore.getMeetingById('meeting-123');
+        expect(meetingData.state).toBe(MEETING_STATES.LEFT);
 
-    // Verify participants cleared
-    expect(participantsStore.participants.size).toBe(0);
-  });
+        // Verify current meeting cleared
+        expect(meetingsStore.currentMeetingId).toBeNull();
 
-  it('should stop local media streams before leaving meeting', async () => {
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings, getLocalMedia } = await import(
-      '@/composables/useWebexMeetings'
-    );
-    const { useMeetingsStore } = await import('@/storage/meetings');
-    const { useMediaStore } = await import('@/storage/media');
+        // Verify moderator status reset
+        expect(meetingsStore.isModerator).toBe(false);
 
-    const { initWebex } = useWebex();
-    const { leaveMeeting } = useWebexMeetings();
-    const meetingsStore = useMeetingsStore();
-    const mediaStore = useMediaStore();
+        // Verify media states reset
+        expect(mediaStore.mediaStates.audioMuted).toBe(false);
+        expect(mediaStore.mediaStates.videoMuted).toBe(false);
 
-    await initWebex('test-token');
-    meetingsStore.addMeeting(mockMeeting);
+        // Verify remote panes cleared
+        expect(mediaStore.remotePanes).toHaveLength(0);
 
-    // Create mock streams with track.stop() method
-    const micTrack = { stop: vi.fn() };
-    const camTrack = { stop: vi.fn() };
-    const micStream = {
-      getTracks: vi.fn(() => [micTrack]),
-      outputStream: {
-        getTracks: vi.fn(() => []),
-      },
-    };
-    const camStream = {
-      getTracks: vi.fn(() => [camTrack]),
-      outputStream: {
-        getTracks: vi.fn(() => []),
-      },
-    };
-
-    // Set streams in both store and localMedia
-    mediaStore.setLocalStream('microphone', micStream);
-    mediaStore.setLocalStream('camera', camStream);
-
-    const localMedia = getLocalMedia();
-    localMedia.microphoneStream = micStream;
-    localMedia.cameraStream = camStream;
-
-    await leaveMeeting('meeting-123');
-
-    // Verify tracks were stopped
-    expect(micTrack.stop).toHaveBeenCalled();
-    expect(camTrack.stop).toHaveBeenCalled();
-
-    // Verify streams cleared from store
-    expect(mediaStore.localStreams.microphone).toBeNull();
-    expect(mediaStore.localStreams.camera).toBeNull();
-  });
-
-  it('should handle leaving when no meeting exists gracefully', async () => {
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-
-    const { initWebex } = useWebex();
-    const { leaveMeeting } = useWebexMeetings();
-
-    await initWebex('test-token');
-
-    // Should not throw when leaving non-existent meeting
-    await expect(leaveMeeting('non-existent')).resolves.not.toThrow();
-  });
-
-  it('creates local media streams when joining without pre-initialised media', async () => {
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-    const { useMeetingsStore } = await import('@/storage/meetings');
-    const { useMediaStore } = await import('@/storage/media');
-    const { __webexMediaMocks } = await import('@/composables/useWebexMedia');
-
-    const { initWebex } = useWebex();
-    const { joinMeeting } = useWebexMeetings();
-    const meetingsStore = useMeetingsStore();
-    const mediaStore = useMediaStore();
-
-    await initWebex('test-token');
-
-    mockMeeting.state = MEETING_STATES.IDLE;
-    meetingsStore.addMeeting(mockMeeting);
-    meetingsStore.updateMeetingState(mockMeeting.id, MEETING_STATES.LEFT);
-
-    mediaStore.clearLocalStreams();
-
-    await joinMeeting(mockMeeting.id);
-
-    expect(__webexMediaMocks.createMicrophoneStream).toHaveBeenCalled();
-    expect(__webexMediaMocks.createCameraStream).toHaveBeenCalled();
-    expect(mediaStore.localStreams.microphone).not.toBeNull();
-    expect(mediaStore.localStreams.camera).not.toBeNull();
-    expect(mockMeeting.joinWithMedia).toHaveBeenCalled();
-
-    const meetingData = meetingsStore.getMeetingById(mockMeeting.id);
-    expect(meetingData.state).toBe(MEETING_STATES.JOINED);
-    expect(meetingsStore.currentMeetingId).toBe(mockMeeting.id);
-  });
-
-  it('updates pinned participant when receiving PIN_PARTICIPANT event', async () => {
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-    const { useParticipantsStore } = await import('@/storage/participants');
-
-    const { initWebex } = useWebex();
-    const { createMeeting } = useWebexMeetings();
-    const participantsStore = useParticipantsStore();
-
-    await initWebex('test-token');
-
-    await createMeeting('test@example.com');
-
-    const pinEventHandler = mockMeeting.on.mock.calls.find(
-      ([eventName]) => eventName === 'meeting:receiveCustomEvent'
-    )?.[1];
-
-    expect(typeof pinEventHandler).toBe('function');
-
-    pinEventHandler({
-      type: 'PIN_PARTICIPANT',
-      data: { memberId: 'member-123' },
+        // Verify participants cleared
+        expect(participantsStore.participants.size).toBe(0);
     });
 
-    expect(participantsStore.pinnedParticipantId).toBe('member-123');
+    it('should stop local media streams before leaving meeting', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings, getLocalMedia } = await import(
+            '@/composables/useWebexMeetings'
+        );
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
 
-    pinEventHandler({
-      type: 'PIN_PARTICIPANT',
-      data: {},
+        const { initWebex } = useWebex();
+        const { leaveMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
+
+        await initWebex('test-token');
+        meetingsStore.addMeeting(mockMeeting);
+
+        // Create mock streams with track.stop() method
+        const micTrack = { stop: vi.fn() };
+        const camTrack = { stop: vi.fn() };
+        const micStream = {
+            getTracks: vi.fn(() => [micTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => []),
+            },
+        };
+        const camStream = {
+            getTracks: vi.fn(() => [camTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => []),
+            },
+        };
+
+        // Set streams in both store and localMedia
+        mediaStore.setLocalStream('microphone', micStream);
+        mediaStore.setLocalStream('camera', camStream);
+
+        const localMedia = getLocalMedia();
+        localMedia.microphoneStream = micStream;
+        localMedia.cameraStream = camStream;
+
+        await leaveMeeting('meeting-123');
+
+        // Verify tracks were stopped
+        expect(micTrack.stop).toHaveBeenCalled();
+        expect(camTrack.stop).toHaveBeenCalled();
+
+        // Verify streams cleared from store
+        expect(mediaStore.localStreams.microphone).toBeNull();
+        expect(mediaStore.localStreams.camera).toBeNull();
     });
 
-    expect(participantsStore.pinnedParticipantId).toBeNull();
-  });
+    it('should handle leaving when no meeting exists gracefully', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
 
-  it('should clean up when meeting ends remotely', async () => {
-    const { useWebex } = await import('@/composables/useWebex');
-    const { useWebexMeetings, getLocalMedia } = await import(
-      '@/composables/useWebexMeetings'
-    );
-    const { useMeetingsStore } = await import('@/storage/meetings');
-    const { useMediaStore } = await import('@/storage/media');
-    const { useParticipantsStore } = await import('@/storage/participants');
+        const { initWebex } = useWebex();
+        const { leaveMeeting } = useWebexMeetings();
 
-    const { initWebex } = useWebex();
-    const { createMeeting } = useWebexMeetings();
-    const meetingsStore = useMeetingsStore();
-    const mediaStore = useMediaStore();
-    const participantsStore = useParticipantsStore();
+        await initWebex('test-token');
 
-    await initWebex('test-token');
-    await createMeeting('test@example.com');
-
-    meetingsStore.setCurrentMeeting('meeting-123');
-    meetingsStore.setModerator(true);
-    meetingsStore.updateMeetingState('meeting-123', MEETING_STATES.JOINED);
-
-    const micTrack = { stop: vi.fn() };
-    const camTrack = { stop: vi.fn() };
-    const micStream = {
-      getTracks: vi.fn(() => [micTrack]),
-      outputStream: {
-        getTracks: vi.fn(() => []),
-      },
-    };
-    const camStream = {
-      getTracks: vi.fn(() => [camTrack]),
-      outputStream: {
-        getTracks: vi.fn(() => []),
-      },
-    };
-
-    mediaStore.setLocalStream('microphone', micStream);
-    mediaStore.setLocalStream('camera', camStream);
-
-    const localMedia = getLocalMedia();
-    localMedia.microphoneStream = micStream;
-    localMedia.cameraStream = camStream;
-
-    mediaStore.addRemotePane({ id: 'pane-1', stream: {} });
-    mediaStore.setMediaState('audioMuted', true);
-    mediaStore.setMediaState('videoMuted', true);
-
-    participantsStore.addParticipant({
-      id: 'user-1',
-      name: 'Remote User',
-      status: 'IN_MEETING',
+        // Should not throw when leaving non-existent meeting
+        await expect(leaveMeeting('non-existent')).resolves.not.toThrow();
     });
 
-    const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
-    const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
-    const clearParticipantsSpy = vi.spyOn(
-      participantsStore,
-      'clearParticipants'
-    );
-    const addNotificationSpy = vi.spyOn(meetingsStore, 'addNotification');
+    it('creates local media streams when joining without pre-initialised media', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
+        const { __webexMediaMocks } = await import(
+            '@/composables/useWebexMedia'
+        );
 
-    const endedHandlers = meetingEventHandlers['meeting:ended'];
-    expect(Array.isArray(endedHandlers) && endedHandlers.length).toBeTruthy();
+        const { initWebex } = useWebex();
+        const { joinMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
 
-    await endedHandlers[0]({ reason: 'remoteLeft' });
+        await initWebex('test-token');
 
-    expect(clearLocalStreamsSpy).toHaveBeenCalled();
-    expect(clearRemotePanesSpy).toHaveBeenCalled();
-    expect(clearParticipantsSpy).toHaveBeenCalled();
-    expect(meetingsStore.getMeetingById('meeting-123').state).toBe(
-      MEETING_STATES.LEFT
-    );
-    expect(meetingsStore.currentMeetingId).toBeNull();
-    expect(meetingsStore.isModerator).toBe(false);
-    expect(mediaStore.mediaStates.audioMuted).toBe(false);
-    expect(mediaStore.mediaStates.videoMuted).toBe(false);
-    expect(mediaStore.remotePanes).toHaveLength(0);
-    expect(participantsStore.participants.size).toBe(0);
-    expect(micTrack.stop).toHaveBeenCalled();
-    expect(camTrack.stop).toHaveBeenCalled();
-    expect(addNotificationSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: 'Meeting has ended',
-      })
-    );
-  });
+        mockMeeting.state = MEETING_STATES.IDLE;
+        meetingsStore.addMeeting(mockMeeting);
+        meetingsStore.updateMeetingState(mockMeeting.id, MEETING_STATES.LEFT);
+
+        mediaStore.clearLocalStreams();
+
+        await joinMeeting(mockMeeting.id);
+
+        expect(__webexMediaMocks.createMicrophoneStream).toHaveBeenCalled();
+        expect(__webexMediaMocks.createCameraStream).toHaveBeenCalled();
+        expect(mediaStore.localStreams.microphone).not.toBeNull();
+        expect(mediaStore.localStreams.camera).not.toBeNull();
+        expect(mockMeeting.joinWithMedia).toHaveBeenCalled();
+
+        const meetingData = meetingsStore.getMeetingById(mockMeeting.id);
+        expect(meetingData.state).toBe(MEETING_STATES.JOINED);
+        expect(meetingsStore.currentMeetingId).toBe(mockMeeting.id);
+    });
+
+    it('updates pinned participant when receiving PIN_PARTICIPANT event', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
+        const { useParticipantsStore } = await import('@/storage/participants');
+
+        const { initWebex } = useWebex();
+        const { createMeeting } = useWebexMeetings();
+        const participantsStore = useParticipantsStore();
+
+        await initWebex('test-token');
+
+        await createMeeting('test@example.com');
+
+        const pinEventHandler = mockMeeting.on.mock.calls.find(
+            ([eventName]) => eventName === 'meeting:receiveCustomEvent'
+        )?.[1];
+
+        expect(typeof pinEventHandler).toBe('function');
+
+        pinEventHandler({
+            type: 'PIN_PARTICIPANT',
+            data: { memberId: 'member-123' },
+        });
+
+        expect(participantsStore.pinnedParticipantId).toBe('member-123');
+
+        pinEventHandler({
+            type: 'PIN_PARTICIPANT',
+            data: {},
+        });
+
+        expect(participantsStore.pinnedParticipantId).toBeNull();
+    });
+
+    it('should clean up when meeting ends remotely', async () => {
+        const { useWebex } = await import('@/composables/useWebex');
+        const { useWebexMeetings, getLocalMedia } = await import(
+            '@/composables/useWebexMeetings'
+        );
+        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useMediaStore } = await import('@/storage/media');
+        const { useParticipantsStore } = await import('@/storage/participants');
+
+        const { initWebex } = useWebex();
+        const { createMeeting } = useWebexMeetings();
+        const meetingsStore = useMeetingsStore();
+        const mediaStore = useMediaStore();
+        const participantsStore = useParticipantsStore();
+
+        await initWebex('test-token');
+        await createMeeting('test@example.com');
+
+        meetingsStore.setCurrentMeeting('meeting-123');
+        meetingsStore.setModerator(true);
+        meetingsStore.updateMeetingState('meeting-123', MEETING_STATES.JOINED);
+
+        const micTrack = { stop: vi.fn() };
+        const camTrack = { stop: vi.fn() };
+        const micStream = {
+            getTracks: vi.fn(() => [micTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => []),
+            },
+        };
+        const camStream = {
+            getTracks: vi.fn(() => [camTrack]),
+            outputStream: {
+                getTracks: vi.fn(() => []),
+            },
+        };
+
+        mediaStore.setLocalStream('microphone', micStream);
+        mediaStore.setLocalStream('camera', camStream);
+
+        const localMedia = getLocalMedia();
+        localMedia.microphoneStream = micStream;
+        localMedia.cameraStream = camStream;
+
+        mediaStore.addRemotePane({ id: 'pane-1', stream: {} });
+        mediaStore.setMediaState('audioMuted', true);
+        mediaStore.setMediaState('videoMuted', true);
+
+        participantsStore.addParticipant({
+            id: 'user-1',
+            name: 'Remote User',
+            status: 'IN_MEETING',
+        });
+
+        const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
+        const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
+        const clearParticipantsSpy = vi.spyOn(
+            participantsStore,
+            'clearParticipants'
+        );
+        const addNotificationSpy = vi.spyOn(meetingsStore, 'addNotification');
+
+        const endedHandlers = meetingEventHandlers['meeting:ended'];
+        expect(
+            Array.isArray(endedHandlers) && endedHandlers.length
+        ).toBeTruthy();
+
+        await endedHandlers[0]({ reason: 'remoteLeft' });
+
+        expect(clearLocalStreamsSpy).toHaveBeenCalled();
+        expect(clearRemotePanesSpy).toHaveBeenCalled();
+        expect(clearParticipantsSpy).toHaveBeenCalled();
+        expect(meetingsStore.getMeetingById('meeting-123').state).toBe(
+            MEETING_STATES.LEFT
+        );
+        expect(meetingsStore.currentMeetingId).toBeNull();
+        expect(meetingsStore.isModerator).toBe(false);
+        expect(mediaStore.mediaStates.audioMuted).toBe(false);
+        expect(mediaStore.mediaStates.videoMuted).toBe(false);
+        expect(mediaStore.remotePanes).toHaveLength(0);
+        expect(participantsStore.participants.size).toBe(0);
+        expect(micTrack.stop).toHaveBeenCalled();
+        expect(camTrack.stop).toHaveBeenCalled();
+        expect(addNotificationSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                message: 'Meeting has ended',
+            })
+        );
+    });
 });

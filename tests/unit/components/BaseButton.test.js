@@ -3,38 +3,38 @@ import { mount } from '@vue/test-utils';
 import BaseButton from '@components/base/BaseButton.vue';
 
 describe('BaseButton', () => {
-  const mountComponent = (props, slots) => {
-    return mount(BaseButton, {
-      props: props,
-      slots: slots,
+    const mountComponent = (props, slots) => {
+        return mount(BaseButton, {
+            props: props,
+            slots: slots,
+        });
+    };
+
+    it('renders with default props', () => {
+        const wrapper = mountComponent(null, { default: 'Click me' });
+
+        expect(wrapper.text()).toBe('Click me');
+        expect(wrapper.attributes('type')).toBe('button');
     });
-  };
 
-  it('renders with default props', () => {
-    const wrapper = mountComponent(null, { default: 'Click me' });
+    it('emits click event', async () => {
+        const wrapper = mountComponent();
 
-    expect(wrapper.text()).toBe('Click me');
-    expect(wrapper.attributes('type')).toBe('button');
-  });
+        await wrapper.trigger('click');
 
-  it('emits click event', async () => {
-    const wrapper = mountComponent();
+        expect(wrapper.emitted('click')).toBeTruthy();
+        expect(wrapper.emitted('click')).toHaveLength(1);
+    });
 
-    await wrapper.trigger('click');
+    it('applies variant classes', () => {
+        const wrapper = mountComponent({ variant: 'danger' });
 
-    expect(wrapper.emitted('click')).toBeTruthy();
-    expect(wrapper.emitted('click')).toHaveLength(1);
-  });
+        expect(wrapper.classes()).toContain('bg-red-600');
+    });
 
-  it('applies variant classes', () => {
-    const wrapper = mountComponent({ variant: 'danger' });
+    it('disables button when disabled prop is true', () => {
+        const wrapper = mountComponent({ disabled: true });
 
-    expect(wrapper.classes()).toContain('bg-red-600');
-  });
-
-  it('disables button when disabled prop is true', () => {
-    const wrapper = mountComponent({ disabled: true });
-
-    expect(wrapper.attributes('disabled')).toBeDefined();
-  });
+        expect(wrapper.attributes('disabled')).toBeDefined();
+    });
 });

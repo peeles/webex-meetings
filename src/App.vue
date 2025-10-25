@@ -1,15 +1,15 @@
 <template>
-  <RouterView />
+    <RouterView />
 
-  <IncomingCallToast
-    :is-visible="!!meetingsStore.incomingCall"
-    :caller-name="meetingsStore.incomingCall?.callerName"
-    :meeting-details="meetingsStore.incomingCall?.meetingDetails"
-    :meeting-id="meetingsStore.incomingCall?.meetingId"
-    @answer="handleAnswerCall"
-    @decline="handleDeclineCall"
-    @timeout="handleTimeoutCall"
-  />
+    <IncomingCallToast
+        :is-visible="!!meetingsStore.incomingCall"
+        :caller-name="meetingsStore.incomingCall?.callerName"
+        :meeting-details="meetingsStore.incomingCall?.meetingDetails"
+        :meeting-id="meetingsStore.incomingCall?.meetingId"
+        @answer="handleAnswerCall"
+        @decline="handleDeclineCall"
+        @timeout="handleTimeoutCall"
+    />
 </template>
 
 <script setup>
@@ -26,35 +26,35 @@ const authStore = useAuthStore();
 const meetingsStore = useMeetingsStore();
 const { initialiseWithToken } = useWebexAuth();
 const { setupGlobalMeetingListeners, answerIncomingCall, declineIncomingCall } =
-  useWebexMeetings();
+    useWebexMeetings();
 
 onMounted(async () => {
-  const hasToken = authStore.loadStoredToken();
-  if (hasToken) {
-    await initialiseWithToken(authStore.accessToken);
-    setupGlobalMeetingListeners();
-  }
+    const hasToken = authStore.loadStoredToken();
+    if (hasToken) {
+        await initialiseWithToken(authStore.accessToken);
+        setupGlobalMeetingListeners();
+    }
 });
 
 const handleAnswerCall = async (meetingId) => {
-  try {
-    await answerIncomingCall(meetingId);
-    await router.push(`/meeting/${meetingId}`);
-  } catch (err) {
-    console.error('Failed to answer call:', err);
-  }
+    try {
+        await answerIncomingCall(meetingId);
+        await router.push(`/meeting/${meetingId}`);
+    } catch (err) {
+        console.error('Failed to answer call:', err);
+    }
 };
 
 const handleDeclineCall = async (meetingId) => {
-  const targetMeetingId = meetingId ?? meetingsStore.incomingCall?.meetingId;
-  if (!targetMeetingId) {
-    return;
-  }
+    const targetMeetingId = meetingId ?? meetingsStore.incomingCall?.meetingId;
+    if (!targetMeetingId) {
+        return;
+    }
 
-  await declineIncomingCall(targetMeetingId);
+    await declineIncomingCall(targetMeetingId);
 };
 
 const handleTimeoutCall = async (meetingId) => {
-  await handleDeclineCall(meetingId);
+    await handleDeclineCall(meetingId);
 };
 </script>

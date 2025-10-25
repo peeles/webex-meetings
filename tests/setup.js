@@ -4,104 +4,104 @@ import { config } from '@vue/test-utils';
 
 // Define MediaStream IMMEDIATELY - before any imports
 if (!global.MediaStream) {
-  global.MediaStream = class MediaStream {
-    constructor(tracks = []) {
-      this.active = true;
-      this.id = `stream-${Math.random().toString(36).substr(2, 9)}`;
-      this._tracks = tracks || [];
-    }
+    global.MediaStream = class MediaStream {
+        constructor(tracks = []) {
+            this.active = true;
+            this.id = `stream-${Math.random().toString(36).substr(2, 9)}`;
+            this._tracks = tracks || [];
+        }
 
-    getTracks() {
-      return this._tracks;
-    }
+        getTracks() {
+            return this._tracks;
+        }
 
-    getAudioTracks() {
-      return this._tracks.filter((t) => t.kind === 'audio');
-    }
+        getAudioTracks() {
+            return this._tracks.filter((t) => t.kind === 'audio');
+        }
 
-    getVideoTracks() {
-      return this._tracks.filter((t) => t.kind === 'video');
-    }
+        getVideoTracks() {
+            return this._tracks.filter((t) => t.kind === 'video');
+        }
 
-    addTrack(track) {
-      this._tracks.push(track);
-    }
+        addTrack(track) {
+            this._tracks.push(track);
+        }
 
-    removeTrack(track) {
-      const index = this._tracks.indexOf(track);
-      if (index > -1) {
-        this._tracks.splice(index, 1);
-      }
-    }
-  };
+        removeTrack(track) {
+            const index = this._tracks.indexOf(track);
+            if (index > -1) {
+                this._tracks.splice(index, 1);
+            }
+        }
+    };
 }
 
 if (!global.MediaStreamTrack) {
-  global.MediaStreamTrack = class MediaStreamTrack {
-    constructor(kind = 'video') {
-      this.kind = kind;
-      this.id = `track-${Math.random().toString(36).substr(2, 9)}`;
-      this.label = `${kind} track`;
-      this.enabled = true;
-      this.muted = false;
-      this.readyState = 'live';
-    }
+    global.MediaStreamTrack = class MediaStreamTrack {
+        constructor(kind = 'video') {
+            this.kind = kind;
+            this.id = `track-${Math.random().toString(36).substr(2, 9)}`;
+            this.label = `${kind} track`;
+            this.enabled = true;
+            this.muted = false;
+            this.readyState = 'live';
+        }
 
-    stop() {
-      this.readyState = 'ended';
-    }
-  };
+        stop() {
+            this.readyState = 'ended';
+        }
+    };
 }
 
 // Also set on window for components that might check window.MediaStream
 if (typeof window !== 'undefined') {
-  window.MediaStream = global.MediaStream;
-  window.MediaStreamTrack = global.MediaStreamTrack;
+    window.MediaStream = global.MediaStream;
+    window.MediaStreamTrack = global.MediaStreamTrack;
 }
 
 // Mock navigator.mediaDevices
 global.navigator.mediaDevices = {
-  getUserMedia: vi
-    .fn()
-    .mockResolvedValue(
-      new global.MediaStream([
-        new global.MediaStreamTrack('audio'),
-        new global.MediaStreamTrack('video'),
-      ])
-    ),
-  enumerateDevices: vi.fn().mockResolvedValue([
-    {
-      deviceId: 'audio-1',
-      kind: 'audioinput',
-      label: 'Microphone',
-      groupId: 'group1',
-    },
-    {
-      deviceId: 'video-1',
-      kind: 'videoinput',
-      label: 'Camera',
-      groupId: 'group2',
-    },
-    {
-      deviceId: 'audio-2',
-      kind: 'audiooutput',
-      label: 'Speaker',
-      groupId: 'group3',
-    },
-  ]),
-  getDisplayMedia: vi
-    .fn()
-    .mockResolvedValue(
-      new global.MediaStream([new global.MediaStreamTrack('video')])
-    ),
+    getUserMedia: vi
+        .fn()
+        .mockResolvedValue(
+            new global.MediaStream([
+                new global.MediaStreamTrack('audio'),
+                new global.MediaStreamTrack('video'),
+            ])
+        ),
+    enumerateDevices: vi.fn().mockResolvedValue([
+        {
+            deviceId: 'audio-1',
+            kind: 'audioinput',
+            label: 'Microphone',
+            groupId: 'group1',
+        },
+        {
+            deviceId: 'video-1',
+            kind: 'videoinput',
+            label: 'Camera',
+            groupId: 'group2',
+        },
+        {
+            deviceId: 'audio-2',
+            kind: 'audiooutput',
+            label: 'Speaker',
+            groupId: 'group3',
+        },
+    ]),
+    getDisplayMedia: vi
+        .fn()
+        .mockResolvedValue(
+            new global.MediaStream([new global.MediaStreamTrack('video')])
+        ),
 };
 
 // Configure Vue Test Utils
 config.global.stubs = {
-  teleport: true,
+    teleport: true,
 };
 
 // Reset modules between tests
 beforeEach(() => {
-  vi.resetModules();
+    vi.resetModules();
 });
