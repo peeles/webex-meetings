@@ -16,16 +16,16 @@
 defineProps({
     modelValue: {
         type: [String, Number],
-        default: ''
+        default: '',
     },
     placeholder: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
 defineEmits(['update:modelValue']);

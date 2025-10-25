@@ -24,13 +24,13 @@ export const useWebexMultistream = () => {
             return;
         }
 
-        mediaStore.remoteAudioElements.forEach(el => {
+        mediaStore.remoteAudioElements.forEach((el) => {
             el.pause();
             el.srcObject = null;
         });
         mediaStore.remoteAudioElements.length = 0;
 
-        audioGroup.getRemoteMedia().forEach(media => {
+        audioGroup.getRemoteMedia().forEach((media) => {
             if (!media?.isActive?.()) {
                 return;
             }
@@ -44,11 +44,12 @@ export const useWebexMultistream = () => {
                 media.on('sourceUpdate', ({ state }) => {
                     if (state === 'inactive') {
                         const index = mediaStore.remoteAudioElements.findIndex(
-                            el => el.srcObject === media.stream
+                            (el) => el.srcObject === media.stream
                         );
                         if (index !== -1) {
                             mediaStore.remoteAudioElements[index].pause();
-                            mediaStore.remoteAudioElements[index].srcObject = null;
+                            mediaStore.remoteAudioElements[index].srcObject =
+                                null;
                             mediaStore.remoteAudioElements.splice(index, 1);
                         }
                     }
@@ -57,7 +58,11 @@ export const useWebexMultistream = () => {
         });
     };
 
-    const handleLayoutChanged = ({ layoutId, activeSpeakerVideoPanes, memberVideoPanes }) => {
+    const handleLayoutChanged = ({
+        layoutId,
+        activeSpeakerVideoPanes,
+        memberVideoPanes,
+    }) => {
         console.log('[Layout Changed]', layoutId);
 
         mediaStore.clearRemotePanes();
@@ -73,15 +78,20 @@ export const useWebexMultistream = () => {
                 memberId: remoteMedia.memberId || 'unknown',
                 mediaType: remoteMedia.mediaType,
                 sourceState: remoteMedia.sourceState,
-                _rm: remoteMedia
+                _rm: remoteMedia,
             };
 
             mediaStore.addRemotePane(pane);
 
-            if (!remoteMedia._hasListener && typeof remoteMedia.on === 'function') {
+            if (
+                !remoteMedia._hasListener &&
+                typeof remoteMedia.on === 'function'
+            ) {
                 remoteMedia._hasListener = true;
                 remoteMedia.on('sourceUpdate', ({ state, memberId }) => {
-                    const existing = mediaStore.remotePanes.find(p => p.id === pane.id);
+                    const existing = mediaStore.remotePanes.find(
+                        (p) => p.id === pane.id
+                    );
                     if (existing) {
                         if (state) {
                             existing.sourceState = state;
@@ -94,14 +104,18 @@ export const useWebexMultistream = () => {
             }
         };
 
-        for (const [groupId, group] of Object.entries(activeSpeakerVideoPanes || {})) {
+        for (const [groupId, group] of Object.entries(
+            activeSpeakerVideoPanes || {}
+        )) {
             const mediaArray = group?.getRemoteMedia?.() || [];
             mediaArray.forEach((rm, index) => {
                 processPane(rm, `as-${groupId}-${index}`);
             });
         }
 
-        for (const [paneId, remoteMedia] of Object.entries(memberVideoPanes || {})) {
+        for (const [paneId, remoteMedia] of Object.entries(
+            memberVideoPanes || {}
+        )) {
             processPane(remoteMedia, `member-${paneId}`);
         }
     };
@@ -120,7 +134,7 @@ export const useWebexMultistream = () => {
             // Wait up to 5 seconds for it to initialize
             let attempts = 0;
             while (!meeting.meeting.remoteMediaManager && attempts < 50) {
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise((resolve) => setTimeout(resolve, 100));
                 attempts++;
             }
 
@@ -142,6 +156,6 @@ export const useWebexMultistream = () => {
 
     return {
         setupMultistreamListeners,
-        changeLayout
+        changeLayout,
     };
 };

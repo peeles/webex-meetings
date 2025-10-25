@@ -13,20 +13,20 @@
 defineProps({
     type: {
         type: String,
-        default: 'text'
+        default: 'text',
     },
     modelValue: {
         type: [String, Number],
-        default: ''
+        default: '',
     },
     placeholder: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
 defineEmits(['update:modelValue']);

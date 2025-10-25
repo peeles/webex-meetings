@@ -9,7 +9,7 @@
 defineProps({
     event: {
         type: Object,
-        required: true
-    }
+        required: true,
+    },
 });
 </script>

@@ -11,14 +11,14 @@ export const useParticipantsStore = defineStore('participants', () => {
     });
 
     const inMeetingParticipants = computed(() => {
-        return participantsList.value.filter(p =>
-            p.status === PARTICIPANT_STATUS.IN_MEETING
+        return participantsList.value.filter(
+            (p) => p.status === PARTICIPANT_STATUS.IN_MEETING
         );
     });
 
     const lobbyParticipants = computed(() => {
-        return participantsList.value.filter(p =>
-            p.status === PARTICIPANT_STATUS.IN_LOBBY
+        return participantsList.value.filter(
+            (p) => p.status === PARTICIPANT_STATUS.IN_LOBBY
         );
     });
 
@@ -29,7 +29,7 @@ export const useParticipantsStore = defineStore('participants', () => {
             isAudioMuted: participant.isAudioMuted || false,
             isVideoMuted: participant.isVideoMuted || false,
             status: participant.status || PARTICIPANT_STATUS.NOT_IN_MEETING,
-            isSelf: participant.isSelf || false
+            isSelf: participant.isSelf || false,
         });
     };
 
@@ -49,7 +49,7 @@ export const useParticipantsStore = defineStore('participants', () => {
     };
 
     const getParticipantsByStatus = (status) => {
-        return participantsList.value.filter(p => p.status === status);
+        return participantsList.value.filter((p) => p.status === status);
     };
 
     const pinParticipant = (memberId) => {

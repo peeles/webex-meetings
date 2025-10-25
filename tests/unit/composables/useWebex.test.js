@@ -10,7 +10,7 @@ describe('useWebex', () => {
         originalWebex = window.Webex;
 
         window.Webex = {
-            init: vi.fn((config) => ({
+            init: vi.fn(() => ({
                 once: vi.fn((event, callback) => {
                     if (event === 'ready') {
                         setTimeout(() => callback(), 0);
@@ -58,7 +58,9 @@ describe('useWebex', () => {
         const { useWebex } = await import('@/composables/useWebex');
         const { initWebex } = useWebex();
 
-        await expect(initWebex('test-token')).rejects.toThrow('Webex SDK not loaded');
+        await expect(initWebex('test-token')).rejects.toThrow(
+            'Webex SDK not loaded'
+        );
     });
 
     it('initializes with correct config', async () => {

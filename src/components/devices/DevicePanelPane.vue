@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { useMediaStore } from '../../storage/media.js';
+import { useMediaStore } from '@/storage/media.js';
 import DeviceSelector from './DeviceSelector.vue';
 
 const mediaStore = useMediaStore();

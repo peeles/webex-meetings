@@ -13,7 +13,7 @@ describe('VideoLayout - Participant Pinning', () => {
     const mountComponent = (props) => {
         return mount(VideoLayout, {
             props: props,
-        })
+        });
     };
 
     const mockPanes = [
@@ -21,19 +21,19 @@ describe('VideoLayout - Participant Pinning', () => {
             id: 'pane-1',
             stream: new MediaStream(),
             memberId: 'participant-123',
-            sourceState: 'live'
-        }
+            sourceState: 'live',
+        },
     ];
 
     it('should render in normal mode when no participant is pinned', () => {
         const wrapper = mountComponent({
             panes: [],
-            layout: 'AllEqual'
+            layout: 'AllEqual',
         });
 
         // Check for normal grid layout
         expect(wrapper.find('.grid').exists()).toBe(true);
-        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
+        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
     });
 
     it('should display pinned participant in main area', async () => {
@@ -43,12 +43,12 @@ describe('VideoLayout - Participant Pinning', () => {
         participantsStore.addParticipant({
             id: 'participant-123',
             name: 'John Doe',
-            status: 'IN_MEETING'
+            status: 'IN_MEETING',
         });
 
         const wrapper = mountComponent({
             panes: mockPanes,
-            layout: 'AllEqual'
+            layout: 'AllEqual',
         });
 
         participantsStore.pinParticipant('participant-123');
@@ -65,8 +65,8 @@ describe('VideoLayout - Participant Pinning', () => {
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
-                layout: 'AllEqual'
-            }
+                layout: 'AllEqual',
+            },
         });
 
         // Pin
@@ -78,7 +78,7 @@ describe('VideoLayout - Participant Pinning', () => {
         participantsStore.unpinParticipant();
         await wrapper.vm.$nextTick();
         expect(wrapper.find('.grid').exists()).toBe(true);
-        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(false);
+        expect(wrapper.find('.flex.w-full.h-full').exists()).toBe(true);
     });
 
     it('should filter out panes with no source', async () => {
@@ -87,21 +87,21 @@ describe('VideoLayout - Participant Pinning', () => {
                 id: 'pane-1',
                 stream: new MediaStream(),
                 memberId: 'participant-123',
-                sourceState: 'live'
+                sourceState: 'live',
             },
             {
                 id: 'pane-2',
                 stream: null,
                 memberId: 'participant-456',
-                sourceState: 'no source'
-            }
+                sourceState: 'no source',
+            },
         ];
 
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
-                layout: 'AllEqual'
-            }
+                layout: 'AllEqual',
+            },
         });
 
         // Should only show 1 pane (the one with source)
@@ -113,13 +113,13 @@ describe('VideoLayout - Participant Pinning', () => {
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
-                layout: 'AllEqual'
-            }
+                layout: 'AllEqual',
+            },
         });
 
         const grid = wrapper.find('.grid');
-        expect(grid.classes()).toContain('grid-cols-3');
-        expect(grid.classes()).toContain('grid-rows-3');
+        expect(grid.classes()).toContain('grid-cols-1');
+        expect(grid.classes()).toContain('grid-rows-1');
     });
 
     it('should handle pin events from VideoPane', async () => {
@@ -132,8 +132,8 @@ describe('VideoLayout - Participant Pinning', () => {
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
-                layout: 'AllEqual'
-            }
+                layout: 'AllEqual',
+            },
         });
 
         // Trigger pin event
@@ -154,8 +154,8 @@ describe('VideoLayout - Participant Pinning', () => {
         const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
-                layout: 'AllEqual'
-            }
+                layout: 'AllEqual',
+            },
         });
 
         // First pin

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { resetWebexInstance } from '@/composables/useWebex';
-import { MEETING_STATES } from '@/dicts/constants';
+import { resetWebexInstance } from '@/composables/useWebex.js';
+import { MEETING_STATES } from '@/dicts/constants.js';
 
 describe('Device Cleanup on Meeting End', () => {
     let originalWebex;
@@ -20,14 +20,14 @@ describe('Device Cleanup on Meeting End', () => {
             stop: vi.fn(),
             kind: 'audio',
             enabled: true,
-            readyState: 'live'
+            readyState: 'live',
         };
 
         camTrack = {
             stop: vi.fn(),
             kind: 'video',
             enabled: true,
-            readyState: 'live'
+            readyState: 'live',
         };
 
         // Create mock outputStream tracks (the actual rendered tracks)
@@ -35,14 +35,14 @@ describe('Device Cleanup on Meeting End', () => {
             stop: vi.fn(),
             kind: 'audio',
             enabled: true,
-            readyState: 'live'
+            readyState: 'live',
         };
 
         const camOutputTrack = {
             stop: vi.fn(),
             kind: 'video',
             enabled: true,
-            readyState: 'live'
+            readyState: 'live',
         };
 
         // Create mock Webex SDK stream objects with outputStream property
@@ -56,7 +56,7 @@ describe('Device Cleanup on Meeting End', () => {
                 getVideoTracks: vi.fn(() => []),
             },
             setUserMuted: vi.fn(),
-            userMuted: false
+            userMuted: false,
         };
 
         camStream = {
@@ -69,7 +69,7 @@ describe('Device Cleanup on Meeting End', () => {
                 getVideoTracks: vi.fn(() => [camOutputTrack]),
             },
             setUserMuted: vi.fn(),
-            userMuted: false
+            userMuted: false,
         };
 
         // Create mock meeting object
@@ -100,8 +100,12 @@ describe('Device Cleanup on Meeting End', () => {
                     syncMeetings: vi.fn().mockResolvedValue(),
                     getAllMeetings: vi.fn().mockReturnValue({}),
                     mediaHelpers: {
-                        createMicrophoneStream: vi.fn().mockResolvedValue(micStream),
-                        createCameraStream: vi.fn().mockResolvedValue(camStream),
+                        createMicrophoneStream: vi
+                            .fn()
+                            .mockResolvedValue(micStream),
+                        createCameraStream: vi
+                            .fn()
+                            .mockResolvedValue(camStream),
                         getDevices: vi.fn().mockResolvedValue([]),
                     },
                 },
@@ -116,11 +120,13 @@ describe('Device Cleanup on Meeting End', () => {
     });
 
     it('should stop all media tracks when leaving a meeting', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia');
-        const { useMeetingsStore } = await import('@/storage/meetings');
-        const { useMediaStore } = await import('@/storage/media');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
+        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
+        const { useMediaStore } = await import('@/storage/media.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -160,17 +166,15 @@ describe('Device Cleanup on Meeting End', () => {
     });
 
     it('should stop tracks before calling meeting.leave()', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia');
-        const { useMeetingsStore } = await import('@/storage/meetings');
-        const { useMediaStore } = await import('@/storage/media');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
+        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
         const { createMicrophoneStream, createCameraStream } = useWebexMedia();
         const meetingsStore = useMeetingsStore();
-        const mediaStore = useMediaStore();
 
         // Track call order
         const callOrder = [];
@@ -193,15 +197,15 @@ describe('Device Cleanup on Meeting End', () => {
         expect(callOrder).toEqual([
             'micTrack.stop',
             'camTrack.stop',
-            'meeting.leave'
+            'meeting.leave',
         ]);
     });
 
     it('should handle streams without getTracks method gracefully', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useMeetingsStore } = await import('@/storage/meetings');
-        const { useMediaStore } = await import('@/storage/media');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import( '@/composables/useWebexMeetings.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
+        const { useMediaStore } = await import('@/storage/media.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -224,12 +228,12 @@ describe('Device Cleanup on Meeting End', () => {
     });
 
     it('should cleanup all resources in correct order', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia');
-        const { useMeetingsStore } = await import('@/storage/meetings');
-        const { useMediaStore } = await import('@/storage/media');
-        const { useParticipantsStore } = await import('@/storage/participants');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
+        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
+        const { useMediaStore } = await import('@/storage/media.js');
+        const { useParticipantsStore } = await import('@/storage/participants.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -254,7 +258,7 @@ describe('Device Cleanup on Meeting End', () => {
         participantsStore.addParticipant({
             id: 'user-1',
             name: 'Test User',
-            status: 'IN_MEETING'
+            status: 'IN_MEETING',
         });
 
         // Track cleanup order
@@ -292,7 +296,7 @@ describe('Device Cleanup on Meeting End', () => {
             'clearLocalStreams',
             'meeting.leave',
             'clearRemotePanes',
-            'clearParticipants'
+            'clearParticipants',
         ]);
 
         // Verify all state is reset
@@ -307,10 +311,10 @@ describe('Device Cleanup on Meeting End', () => {
     });
 
     it('should release device access after stopping tracks', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia');
-        const { useMeetingsStore } = await import('@/storage/meetings');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
+        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -343,11 +347,11 @@ describe('Device Cleanup on Meeting End', () => {
     });
 
     it('should stop outputStream tracks when leaving meeting', async () => {
-        const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia');
-        const { useMeetingsStore } = await import('@/storage/meetings');
-        const { useMediaStore } = await import('@/storage/media');
+        const { useWebex } = await import('@/composables/useWebex.js');
+        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
+        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useMeetingsStore } = await import('@/storage/meetings.js');
+        const { useMediaStore } = await import('@/storage/media.js');
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -362,8 +366,10 @@ describe('Device Cleanup on Meeting End', () => {
         await createCameraStream();
 
         // Get references to the outputStream tracks
-        const micOutputTracks = mediaStore.localStreams.microphone.outputStream.getTracks();
-        const camOutputTracks = mediaStore.localStreams.camera.outputStream.getTracks();
+        const micOutputTracks =
+            mediaStore.localStreams.microphone.outputStream.getTracks();
+        const camOutputTracks =
+            mediaStore.localStreams.camera.outputStream.getTracks();
 
         // Verify outputStream tracks exist
         expect(micOutputTracks).toHaveLength(1);

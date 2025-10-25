@@ -19,13 +19,14 @@ import { useAuthStore } from '@/storage/auth';
 import { useMeetingsStore } from '@/storage/meetings';
 import { useWebexAuth } from '@/composables/useWebexAuth';
 import { useWebexMeetings } from '@/composables/useWebexMeetings';
-import IncomingCallToast from '@/components/IncomingCallToast.vue';
+import IncomingCallToast from '@components/IncomingCallToast.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const meetingsStore = useMeetingsStore();
 const { initialiseWithToken } = useWebexAuth();
-const { setupGlobalMeetingListeners, answerIncomingCall, declineIncomingCall } = useWebexMeetings();
+const { setupGlobalMeetingListeners, answerIncomingCall, declineIncomingCall } =
+    useWebexMeetings();
 
 onMounted(async () => {
     const hasToken = authStore.loadStoredToken();

@@ -15,7 +15,9 @@
                 />
             </div>
 
-            <div class="absolute bottom-0 left-0 right-0 flex justify-center z-20 p-11">
+            <div
+                class="absolute bottom-0 left-0 right-0 flex justify-center z-20 p-11"
+            >
                 <MeetingToolbar
                     :audio-muted="mediaStore.mediaStates.audioMuted"
                     :video-muted="mediaStore.mediaStates.videoMuted"
@@ -34,11 +36,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useMediaStore } from '../storage/media';
-import { useMeetingsStore } from '../storage/meetings';
-import { useWebexMeetings } from '../composables/useWebexMeetings';
-import { useWebexMedia } from '../composables/useWebexMedia';
-import MeetingLayout from '../components/layouts/MeetingLayout.vue';
+import { useMediaStore } from '@/storage/media';
+import { useMeetingsStore } from '@/storage/meetings';
+import { useWebexMeetings } from '@/composables/useWebexMeetings';
+import { useWebexMedia } from '@/composables/useWebexMedia';
+import MeetingLayout from '@components/layouts/MeetingLayout.vue';
 import VideoLayout from '@components/video/VideoLayout.vue';
 import MeetingToolbar from '@components/meeting/MeetingToolbar.vue';
 import ParticipantList from '@components/participants/ParticipantList.vue';
@@ -48,14 +50,22 @@ const router = useRouter();
 const mediaStore = useMediaStore();
 const meetingsStore = useMeetingsStore();
 const { joinMeeting, leaveMeeting } = useWebexMeetings();
-const { createMicrophoneStream, createCameraStream, toggleMicrophone, toggleCamera } = useWebexMedia();
+const {
+    createMicrophoneStream,
+    createCameraStream,
+    toggleMicrophone,
+    toggleCamera,
+} = useWebexMedia();
 
 const showParticipants = ref(false);
 
 onMounted(async () => {
     try {
         // Check if browser is HTTPS (required for media)
-        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        if (
+            window.location.protocol !== 'https:' &&
+            window.location.hostname !== 'localhost'
+        ) {
             console.error('HTTPS required for media access');
         }
 

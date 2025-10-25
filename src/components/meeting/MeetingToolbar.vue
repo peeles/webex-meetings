@@ -1,5 +1,7 @@
 <template>
-    <div class="flex items-center justify-center gap-4 px-6 py-4 bg-white rounded-tl-3xl rounded-tr-3xl shadow-2xl border-2 border-gray-300">
+    <div
+        class="flex items-center justify-center gap-4 px-6 py-4 bg-white rounded-tl-3xl rounded-tr-3xl shadow-2xl border-2 border-gray-300"
+    >
         <IconButton
             :icon="audioMuted ? 'mic-off' : 'mic'"
             :variant="audioMuted ? 'danger' : 'secondary'"
@@ -36,27 +38,33 @@
 </template>
 
 <script setup>
-import BaseButton from '../base/BaseButton.vue';
-import IconButton from '../base/IconButton.vue';
+import BaseButton from '@/components/base/BaseButton.vue';
+import IconButton from '@/components/base/IconButton.vue';
 
 defineProps({
     audioMuted: {
         type: Boolean,
-        default: false
+        default: false,
     },
     videoMuted: {
         type: Boolean,
-        default: false
+        default: false,
     },
     meetingLocked: {
         type: Boolean,
-        default: false
+        default: false,
     },
     isModerator: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
-defineEmits(['toggleAudio', 'toggleVideo', 'toggleLock', 'toggleParticipants', 'leave']);
+defineEmits([
+    'toggleAudio',
+    'toggleVideo',
+    'toggleLock',
+    'toggleParticipants',
+    'leave',
+]);
 </script>
