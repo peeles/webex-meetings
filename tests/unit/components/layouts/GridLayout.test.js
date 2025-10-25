@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import GridLayout from '@components/video/VideoGrid.vue';
+import VideoLayout from '@components/video/VideoLayout.vue';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import { useParticipantsStore } from '@/storage/participants.js';
 
-describe('GridLayout', () => {
+describe('VideoLayout', () => {
     let meetingsStore;
     let participantsStore;
 
@@ -16,7 +16,7 @@ describe('GridLayout', () => {
     });
 
     it('renders correctly with no panes', () => {
-        const wrapper = mount(GridLayout, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
                 localStream: null,
@@ -24,7 +24,7 @@ describe('GridLayout', () => {
             },
         });
 
-        // VideoGrid renders an empty grid when no panes
+        // VideoLayout renders an empty grid when no panes
         expect(wrapper.find('.grid').exists()).toBe(true);
     });
 
@@ -48,7 +48,7 @@ describe('GridLayout', () => {
             },
         ];
 
-        const wrapper = mount(GridLayout, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes,
                 localStream: new MediaStream(),
@@ -73,7 +73,7 @@ describe('GridLayout', () => {
             },
         ];
 
-        const wrapper = mount(GridLayout, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes,
                 localStream: new MediaStream(),

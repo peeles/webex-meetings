@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
-import VideoGrid from '@components/video/VideoGrid.vue';
+import VideoLayout from '@components/video/VideoLayout.vue';
 import { useMeetingsStore } from '../../../src/storage/meetings';
 import { useParticipantsStore } from '../../../src/storage/participants';
 
-describe('VideoGrid - Participant Pinning', () => {
+describe('VideoLayout - Participant Pinning', () => {
     beforeEach(() => {
         setActivePinia(createPinia());
     });
 
     it('should render in normal mode when no participant is pinned', () => {
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
                 layout: 'AllEqual'
@@ -43,7 +43,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -70,7 +70,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -107,7 +107,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -120,7 +120,7 @@ describe('VideoGrid - Participant Pinning', () => {
     });
 
     it('should apply correct grid classes for AllEqual layout', () => {
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: [],
                 layout: 'AllEqual'
@@ -147,7 +147,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'
@@ -177,7 +177,7 @@ describe('VideoGrid - Participant Pinning', () => {
             }
         ];
 
-        const wrapper = mount(VideoGrid, {
+        const wrapper = mount(VideoLayout, {
             props: {
                 panes: mockPanes,
                 layout: 'AllEqual'

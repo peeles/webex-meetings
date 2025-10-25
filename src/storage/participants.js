@@ -4,6 +4,7 @@ import { PARTICIPANT_STATUS } from '@/dicts/constants';
 
 export const useParticipantsStore = defineStore('participants', () => {
     const participants = ref(new Map());
+    const pinnedParticipantId = ref(null);
 
     const participantsList = computed(() => {
         return Array.from(participants.value.values());
@@ -51,15 +52,35 @@ export const useParticipantsStore = defineStore('participants', () => {
         return participantsList.value.filter(p => p.status === status);
     };
 
+    const pinParticipant = (memberId) => {
+        pinnedParticipantId.value = memberId;
+    };
+
+    const unpinParticipant = () => {
+        pinnedParticipantId.value = null;
+    };
+
+    const togglePinParticipant = (memberId) => {
+        if (pinnedParticipantId.value === memberId) {
+            unpinParticipant();
+        } else {
+            pinParticipant(memberId);
+        }
+    };
+
     return {
         participants,
         participantsList,
+        pinnedParticipantId,
         inMeetingParticipants,
         lobbyParticipants,
         addParticipant,
         updateParticipant,
         removeParticipant,
         clearParticipants,
-        getParticipantsByStatus
+        getParticipantsByStatus,
+        pinParticipant,
+        unpinParticipant,
+        togglePinParticipant,
     };
 });

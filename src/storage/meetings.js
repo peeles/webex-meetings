@@ -8,7 +8,6 @@ export const useMeetingsStore = defineStore('meetings', () => {
     const currentMeetingId = ref(null);
     const currentLayout = ref(LAYOUTS.ALL_EQUAL);
     const participants = reactive({});
-    const pinnedParticipantId = ref(null);
     const isModerator = ref(false);
     const networkQuality = ref('good'); // 'good', 'poor', 'unknown'
     const meetingLocked = ref(false);
@@ -93,7 +92,6 @@ export const useMeetingsStore = defineStore('meetings', () => {
         meetingsMap.clear();
         currentMeetingId.value = null;
         currentLayout.value = LAYOUTS.ALL_EQUAL;
-        pinnedParticipantId.value = null;
         isModerator.value = false;
         networkQuality.value = 'good';
         meetingLocked.value = false;
@@ -148,28 +146,11 @@ export const useMeetingsStore = defineStore('meetings', () => {
         incomingCall.value = null;
     };
 
-    const pinParticipant = (memberId) => {
-        pinnedParticipantId.value = memberId;
-    };
-
-    const unpinParticipant = () => {
-        pinnedParticipantId.value = null;
-    };
-
-    const togglePinParticipant = (memberId) => {
-        if (pinnedParticipantId.value === memberId) {
-            unpinParticipant();
-        } else {
-            pinParticipant(memberId);
-        }
-    };
-
     return {
         currentMeetingId,
         currentLayout,
         currentMeeting,
         meetingsList,
-        pinnedParticipantId,
         isModerator,
         networkQuality,
         meetingLocked,
@@ -186,9 +167,6 @@ export const useMeetingsStore = defineStore('meetings', () => {
         getParticipant,
         removeParticipant,
         participants,
-        pinParticipant,
-        unpinParticipant,
-        togglePinParticipant,
         setModerator,
         setNetworkQuality,
         setMeetingLocked,
