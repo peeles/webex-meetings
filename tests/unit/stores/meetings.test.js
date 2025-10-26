@@ -22,7 +22,7 @@ describe('Meetings Store', () => {
             id: 'meeting-123',
             sipUri: 'test@example.com',
             destination: 'test@example.com',
-            state: 'IDLE'
+            state: 'IDLE',
         };
 
         store.addMeeting(meeting);

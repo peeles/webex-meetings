@@ -16,19 +16,27 @@ export const useWebexMedia = () => {
 
             const devices = await webex.meetings.mediaHelpers.getDevices();
 
-            const audioInputs = devices.filter(d => d.kind === 'audioinput');
-            const audioOutputs = devices.filter(d => d.kind === 'audiooutput');
-            const videoInputs = devices.filter(d => d.kind === 'videoinput');
+            const audioInputs = devices.filter((d) => d.kind === 'audioinput');
+            const audioOutputs = devices.filter(
+                (d) => d.kind === 'audiooutput'
+            );
+            const videoInputs = devices.filter((d) => d.kind === 'videoinput');
 
             mediaStore.setDevices('audioInputs', audioInputs);
             mediaStore.setDevices('audioOutputs', audioOutputs);
             mediaStore.setDevices('videoInputs', videoInputs);
 
             if (audioInputs.length && !mediaStore.selectedDevices.audioInput) {
-                mediaStore.setSelectedDevice('audioInput', audioInputs[0].deviceId);
+                mediaStore.setSelectedDevice(
+                    'audioInput',
+                    audioInputs[0].deviceId
+                );
             }
             if (videoInputs.length && !mediaStore.selectedDevices.videoInput) {
-                mediaStore.setSelectedDevice('videoInput', videoInputs[0].deviceId);
+                mediaStore.setSelectedDevice(
+                    'videoInput',
+                    videoInputs[0].deviceId
+                );
             }
         } catch (err) {
             console.error('Failed to enumerate devices:', err);
@@ -46,11 +54,12 @@ export const useWebexMedia = () => {
                 return;
             }
 
-            const stream = await webex.meetings.mediaHelpers.createMicrophoneStream({
-                echoCancellation: true,
-                noiseSuppression: true,
-                ...constraints
-            });
+            const stream =
+                await webex.meetings.mediaHelpers.createMicrophoneStream({
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    ...constraints,
+                });
 
             // Store in both localMedia (for cleanup) and store (for UI)
             localMedia.microphoneStream = stream;
@@ -72,12 +81,14 @@ export const useWebexMedia = () => {
                 return;
             }
 
-            const stream = await webex.meetings.mediaHelpers.createCameraStream({
-                width: 1280,
-                height: 720,
-                frameRate: 30,
-                ...constraints
-            });
+            const stream = await webex.meetings.mediaHelpers.createCameraStream(
+                {
+                    width: 1280,
+                    height: 720,
+                    frameRate: 30,
+                    ...constraints,
+                }
+            );
 
             // Store in both localMedia (for cleanup) and store (for UI)
             localMedia.cameraStream = stream;
@@ -117,6 +128,6 @@ export const useWebexMedia = () => {
         createCameraStream,
         toggleMicrophone,
         toggleCamera,
-        stopAllLocalStreams
+        stopAllLocalStreams,
     };
 };

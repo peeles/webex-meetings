@@ -12,22 +12,24 @@ describe('ParticipantCard', () => {
                     isSelf: false,
                     isAudioMuted: false,
                     isVideoMuted: false,
-                    ...overrides
-                }
+                    ...overrides,
+                },
             },
             global: {
                 stubs: {
                     BaseAvatar: { template: '<div />' },
-                    BaseBadge: { template: '<div><slot /></div>' }
-                }
-            }
+                    BaseBadge: { template: '<div><slot /></div>' },
+                },
+            },
         });
     };
 
     it('normalises multi-word status text by replacing underscores and lowercasing', () => {
         const wrapper = mountComponent();
 
-        expect(wrapper.find('.text-xs.text-gray-500').text()).toBe('in meeting now');
+        expect(wrapper.find('.text-xs.text-gray-500').text()).toBe(
+            'in meeting now'
+        );
     });
 
     it('returns empty string when status is missing', () => {

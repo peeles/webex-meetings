@@ -25,7 +25,10 @@ export const useWebexMeetings = () => {
         if (!microphone) {
             tasks.push(
                 webexMedia.createMicrophoneStream().catch((err) => {
-                    console.error('[JoinMeeting] Failed to create microphone stream:', err);
+                    console.error(
+                        '[JoinMeeting] Failed to create microphone stream:',
+                        err
+                    );
                     throw err;
                 })
             );
@@ -34,7 +37,10 @@ export const useWebexMeetings = () => {
         if (!camera) {
             tasks.push(
                 webexMedia.createCameraStream().catch((err) => {
-                    console.error('[JoinMeeting] Failed to create camera stream:', err);
+                    console.error(
+                        '[JoinMeeting] Failed to create camera stream:',
+                        err
+                    );
                     throw err;
                 })
             );
@@ -58,7 +64,7 @@ export const useWebexMeetings = () => {
         await webex.meetings.syncMeetings();
 
         const allMeetings = webex.meetings.getAllMeetings();
-        Object.values(allMeetings).forEach(meeting => {
+        Object.values(allMeetings).forEach((meeting) => {
             meetingsStore.addMeeting(meeting);
         });
     };
@@ -84,13 +90,19 @@ export const useWebexMeetings = () => {
 
         const meeting = meetingData.meeting;
 
-        if (meetingData.state === MEETING_STATES.JOINED || meeting.state === MEETING_STATES.JOINED) {
-            console.log('[JoinMeeting] Meeting already joined, skipping joinWithMedia');
+        if (
+            meetingData.state === MEETING_STATES.JOINED ||
+            meeting.state === MEETING_STATES.JOINED
+        ) {
+            console.log(
+                '[JoinMeeting] Meeting already joined, skipping joinWithMedia'
+            );
             meetingsStore.setCurrentMeeting(meetingId);
             return meeting;
         }
 
-        const { microphone: micStream, camera: camStream } = await ensureLocalMediaStreams();
+        const { microphone: micStream, camera: camStream } =
+            await ensureLocalMediaStreams();
 
         meetingsStore.updateMeetingState(meetingId, MEETING_STATES.JOINING);
 
@@ -103,34 +115,36 @@ export const useWebexMeetings = () => {
                 enableMultistream: true,
                 moderator: options.moderator || false,
                 locale: 'en_GB',
-                ...options
+                ...options,
             },
             mediaOptions: {
                 allowMediaInLobby: true,
                 localStreams: {
                     microphone: micStream,
-                    camera: camStream
-                }
+                    camera: camStream,
+                },
             },
             remoteMediaManagerOptions: {
                 video: {
                     initialLayoutId: 'AllEqual',
                     layouts: {
                         AllEqual: {
-                            activeSpeakerVideoPaneGroups: [{
-                                id: 'grid',
-                                numPanes: 9,
-                                size: 'best',
-                                priority: 255
-                            }]
-                        }
-                    }
+                            activeSpeakerVideoPaneGroups: [
+                                {
+                                    id: 'grid',
+                                    numPanes: 9,
+                                    size: 'best',
+                                    priority: 255,
+                                },
+                            ],
+                        },
+                    },
                 },
                 audio: {
                     numOfActiveSpeakerStreams: 1,
-                    numOfScreenShareStreams: 0
-                }
-            }
+                    numOfScreenShareStreams: 0,
+                },
+            },
         });
 
         meetingsStore.setCurrentMeeting(meetingId);
@@ -138,13 +152,16 @@ export const useWebexMeetings = () => {
 
         // Check moderator status immediately after joining
         if (meeting.members && meeting.members.selfId) {
-            const selfMember = meeting.members.membersCollection?.members?.[meeting.members.selfId];
+            const selfMember =
+                meeting.members.membersCollection?.members?.[
+                    meeting.members.selfId
+                ];
             if (selfMember) {
                 console.log('Checking moderator status after join:', {
                     selfId: meeting.members.selfId,
                     isModerator: selfMember.isModerator,
                     isHost: selfMember.isHost,
-                    isGuest: selfMember.isGuest
+                    isGuest: selfMember.isGuest,
                 });
                 if (selfMember.isModerator) {
                     meetingsStore.setModerator(true);
@@ -192,7 +209,9 @@ export const useWebexMeetings = () => {
             mediaStore.setMediaState('audioMuted', false);
             mediaStore.setMediaState('videoMuted', false);
 
-            console.log('[LeaveMeeting] Successfully left, all media cleaned up');
+            console.log(
+                '[LeaveMeeting] Successfully left, all media cleaned up'
+            );
         } catch (err) {
             console.error('[LeaveMeeting] Error:', err);
             throw err;
@@ -206,7 +225,10 @@ export const useWebexMeetings = () => {
         }
 
         const meeting = meetingData.meeting;
-        console.log('[DestroyMeeting] Starting destruction for meeting:', meeting.id);
+        console.log(
+            '[DestroyMeeting] Starting destruction for meeting:',
+            meeting.id
+        );
 
         try {
             // Stop local media first using cleanup function
@@ -216,7 +238,10 @@ export const useWebexMeetings = () => {
             mediaStore.clearLocalStreams();
 
             // Leave meeting if not already left
-            if (meeting.state !== 'LEFT' && meeting.state !== MEETING_STATES.LEFT) {
+            if (
+                meeting.state !== 'LEFT' &&
+                meeting.state !== MEETING_STATES.LEFT
+            ) {
                 console.log('[DestroyMeeting] Leaving meeting...');
                 await meeting.leave();
             }
@@ -224,10 +249,15 @@ export const useWebexMeetings = () => {
             // Stop remote media manager
             if (meeting.remoteMediaManager) {
                 try {
-                    console.log('[DestroyMeeting] Stopping remote media manager...');
+                    console.log(
+                        '[DestroyMeeting] Stopping remote media manager...'
+                    );
                     await meeting.remoteMediaManager.stop();
                 } catch (err) {
-                    console.debug('[DestroyMeeting] remoteMediaManager.stop() failed (ignored):', err);
+                    console.debug(
+                        '[DestroyMeeting] remoteMediaManager.stop() failed (ignored):',
+                        err
+                    );
                 }
             }
 
@@ -244,10 +274,15 @@ export const useWebexMeetings = () => {
                 const webex = getWebexInstance();
                 if (webex?.meetings?.unregisterMeeting) {
                     await webex.meetings.unregisterMeeting(meeting);
-                    console.log('[DestroyMeeting] Meeting unregistered from SDK');
+                    console.log(
+                        '[DestroyMeeting] Meeting unregistered from SDK'
+                    );
                 }
             } catch (err) {
-                console.warn('[DestroyMeeting] Failed to unregister meeting:', err);
+                console.warn(
+                    '[DestroyMeeting] Failed to unregister meeting:',
+                    err
+                );
             }
 
             // Clear all stores
@@ -313,27 +348,31 @@ export const useWebexMeetings = () => {
 
         try {
             // Get all participants in lobby
-            const lobbyParticipants = participantsStore.getParticipantsByStatus(PARTICIPANT_STATUS.IN_LOBBY);
+            const lobbyParticipants = participantsStore.getParticipantsByStatus(
+                PARTICIPANT_STATUS.IN_LOBBY
+            );
 
             if (lobbyParticipants.length === 0) {
                 console.log('[AdmitAll] No participants in lobby');
                 return;
             }
 
-            const participantIds = lobbyParticipants.map(p => p.id);
-            console.log(`[AdmitAll] Admitting ${participantIds.length} participants from lobby`);
+            const participantIds = lobbyParticipants.map((p) => p.id);
+            console.log(
+                `[AdmitAll] Admitting ${participantIds.length} participants from lobby`
+            );
 
             await meetingData.meeting.admit(participantIds);
 
             meetingsStore.addNotification({
                 type: 'success',
-                message: `Admitted ${participantIds.length} participants from lobby`
+                message: `Admitted ${participantIds.length} participants from lobby`,
             });
         } catch (err) {
             console.error('[AdmitAll] Error:', err);
             meetingsStore.addNotification({
                 type: 'error',
-                message: 'Failed to admit participants from lobby'
+                message: 'Failed to admit participants from lobby',
             });
         }
     };
@@ -350,13 +389,13 @@ export const useWebexMeetings = () => {
 
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'Denied entry to participant'
+                message: 'Denied entry to participant',
             });
         } catch (err) {
             console.error('[DenyEntry] Error:', err);
             meetingsStore.addNotification({
                 type: 'error',
-                message: 'Failed to deny entry'
+                message: 'Failed to deny entry',
             });
         }
     };
@@ -371,7 +410,7 @@ export const useWebexMeetings = () => {
         meeting.members.on('members:update', ({ delta }) => {
             try {
                 if (delta.added) {
-                    delta.added.forEach(member => {
+                    delta.added.forEach((member) => {
                         if (!member || !member.id) {
                             return;
                         }
@@ -381,11 +420,13 @@ export const useWebexMeetings = () => {
                             name: member.name || 'Unknown',
                             isAudioMuted: member.isAudioMuted || false,
                             isVideoMuted: member.isVideoMuted || false,
-                            status: member.isInMeeting ? PARTICIPANT_STATUS.IN_MEETING :
-                                member.isInLobby ? PARTICIPANT_STATUS.IN_LOBBY :
-                                    PARTICIPANT_STATUS.NOT_IN_MEETING,
+                            status: member.isInMeeting
+                                ? PARTICIPANT_STATUS.IN_MEETING
+                                : member.isInLobby
+                                  ? PARTICIPANT_STATUS.IN_LOBBY
+                                  : PARTICIPANT_STATUS.NOT_IN_MEETING,
                             isSelf: member.isSelf || false,
-                            isModerator: member.isModerator || false
+                            isModerator: member.isModerator || false,
                         });
 
                         // Update moderator status if this is us
@@ -393,15 +434,17 @@ export const useWebexMeetings = () => {
                             console.log('Self member detected:', {
                                 name: member.name,
                                 isModerator: member.isModerator,
-                                id: member.id
+                                id: member.id,
                             });
-                            meetingsStore.setModerator(member.isModerator || false);
+                            meetingsStore.setModerator(
+                                member.isModerator || false
+                            );
                         }
                     });
                 }
 
                 if (delta.updated) {
-                    delta.updated.forEach(member => {
+                    delta.updated.forEach((member) => {
                         if (!member || !member.id) {
                             return;
                         }
@@ -409,10 +452,12 @@ export const useWebexMeetings = () => {
                         participantsStore.updateParticipant(member.id, {
                             isAudioMuted: member.isAudioMuted || false,
                             isVideoMuted: member.isVideoMuted || false,
-                            status: member.isInMeeting ? PARTICIPANT_STATUS.IN_MEETING :
-                                member.isInLobby ? PARTICIPANT_STATUS.IN_LOBBY :
-                                    PARTICIPANT_STATUS.NOT_IN_MEETING,
-                            isModerator: member.isModerator || false
+                            status: member.isInMeeting
+                                ? PARTICIPANT_STATUS.IN_MEETING
+                                : member.isInLobby
+                                  ? PARTICIPANT_STATUS.IN_LOBBY
+                                  : PARTICIPANT_STATUS.NOT_IN_MEETING,
+                            isModerator: member.isModerator || false,
                         });
 
                         // Update moderator status if this is us
@@ -448,7 +493,7 @@ export const useWebexMeetings = () => {
             meetingsStore.setMeetingLocked(true);
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'Meeting has been locked'
+                message: 'Meeting has been locked',
             });
         });
 
@@ -457,7 +502,7 @@ export const useWebexMeetings = () => {
             meetingsStore.setMeetingLocked(false);
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'Meeting has been unlocked'
+                message: 'Meeting has been unlocked',
             });
         });
 
@@ -467,7 +512,7 @@ export const useWebexMeetings = () => {
             mediaStore.setMediaState('audioMuted', true);
             meetingsStore.addNotification({
                 type: 'warning',
-                message: 'You were muted by the moderator'
+                message: 'You were muted by the moderator',
             });
         });
 
@@ -476,7 +521,7 @@ export const useWebexMeetings = () => {
             mediaStore.setMediaState('audioMuted', false);
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'You were unmuted by the moderator'
+                message: 'You were unmuted by the moderator',
             });
         });
 
@@ -484,7 +529,7 @@ export const useWebexMeetings = () => {
             console.log('[Meeting] Moderator requested you to unmute');
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'Moderator has requested you to unmute'
+                message: 'Moderator has requested you to unmute',
             });
         });
 
@@ -492,7 +537,10 @@ export const useWebexMeetings = () => {
         meeting.on('meeting:stateChanged', (payload) => {
             console.log('[Meeting] State changed:', payload);
             if (payload.currentState) {
-                meetingsStore.updateMeetingState(meeting.id, payload.currentState);
+                meetingsStore.updateMeetingState(
+                    meeting.id,
+                    payload.currentState
+                );
             }
         });
 
@@ -504,22 +552,30 @@ export const useWebexMeetings = () => {
 
             const meetingRecord = meetingsStore.getMeetingById(meeting.id);
             if (meetingRecord?.state === MEETING_STATES.LEFT) {
-                console.log(`[Meeting] ${eventName} ignored - meeting already marked as left`);
+                console.log(
+                    `[Meeting] ${eventName} ignored - meeting already marked as left`
+                );
                 return;
             }
 
             hasHandledTermination = true;
-            console.log(`[Meeting] ${eventName} received, cleaning up meeting`, payload);
+            console.log(
+                `[Meeting] ${eventName} received, cleaning up meeting`,
+                payload
+            );
 
             meetingsStore.addNotification({
                 type: 'info',
-                message: 'Meeting has ended'
+                message: 'Meeting has ended',
             });
 
             try {
                 await destroyMeeting(meeting.id);
             } catch (err) {
-                console.error(`[Meeting] Failed to cleanup after ${eventName}:`, err);
+                console.error(
+                    `[Meeting] Failed to cleanup after ${eventName}:`,
+                    err
+                );
             }
         };
 
@@ -538,9 +594,15 @@ export const useWebexMeetings = () => {
             // downlinkQuality/uplinkQuality can be: 'good', 'poor', 'unknown'
 
             let overallQuality = 'good';
-            if (payload.downlinkQuality === 'poor' || payload.uplinkQuality === 'poor') {
+            if (
+                payload.downlinkQuality === 'poor' ||
+                payload.uplinkQuality === 'poor'
+            ) {
                 overallQuality = 'poor';
-            } else if (payload.downlinkQuality === 'unknown' || payload.uplinkQuality === 'unknown') {
+            } else if (
+                payload.downlinkQuality === 'unknown' ||
+                payload.uplinkQuality === 'unknown'
+            ) {
                 overallQuality = 'unknown';
             }
 
@@ -549,7 +611,7 @@ export const useWebexMeetings = () => {
             if (overallQuality === 'poor') {
                 meetingsStore.addNotification({
                     type: 'warning',
-                    message: 'Poor network quality detected'
+                    message: 'Poor network quality detected',
                 });
             }
         });
@@ -575,39 +637,50 @@ export const useWebexMeetings = () => {
                     type: 'PIN_PARTICIPANT',
                     data: {
                         memberId: memberId,
-                        timestamp: Date.now()
-                    }
+                        timestamp: Date.now(),
+                    },
                 });
 
-                console.log('[BroadcastPin] Pin state broadcasted:', memberId ? `pinned ${memberId}` : 'unpinned');
+                console.log(
+                    '[BroadcastPin] Pin state broadcasted:',
+                    memberId ? `pinned ${memberId}` : 'unpinned'
+                );
                 return;
             }
 
             // Try data channel if available
-            if (meeting.dataChannel && typeof meeting.dataChannel.send === 'function') {
+            if (
+                meeting.dataChannel &&
+                typeof meeting.dataChannel.send === 'function'
+            ) {
                 console.log('[BroadcastPin] Using dataChannel for pin state');
 
                 await meeting.dataChannel.send({
                     type: 'PIN_PARTICIPANT',
                     data: {
                         memberId: memberId,
-                        timestamp: Date.now()
-                    }
+                        timestamp: Date.now(),
+                    },
                 });
 
-                console.log('[BroadcastPin] Pin state broadcasted via dataChannel');
+                console.log(
+                    '[BroadcastPin] Pin state broadcasted via dataChannel'
+                );
                 return;
             }
 
             // Fallback: Check for other broadcast methods
-            const availableMethods = Object.keys(meeting).filter(key =>
-                typeof meeting[key] === 'function' &&
-                (key.includes('send') || key.includes('broadcast'))
+            const availableMethods = Object.keys(meeting).filter(
+                (key) =>
+                    typeof meeting[key] === 'function' &&
+                    (key.includes('send') || key.includes('broadcast'))
             );
 
-            console.warn('[BroadcastPin] No suitable broadcast method found. Available methods:', availableMethods);
+            console.warn(
+                '[BroadcastPin] No suitable broadcast method found. Available methods:',
+                availableMethods
+            );
             console.log('[BroadcastPin] Pin state updated locally only');
-
         } catch (err) {
             console.error('[BroadcastPin] Error:', err);
             // Don't throw - local pin state still works
@@ -632,13 +705,14 @@ export const useWebexMeetings = () => {
             console.log('[IncomingCall] New meeting detected:', {
                 id: meeting.id,
                 sipUri: meeting.sipUri,
-                state: meeting.state
+                state: meeting.state,
             });
 
             // Check if this is an incoming call (not one we created)
             if (meeting.state === 'ACTIVE' || meeting.state === 'IDLE') {
                 // Get caller information
-                const callerName = meeting.partner?.name || meeting.sipUri || 'Unknown Caller';
+                const callerName =
+                    meeting.partner?.name || meeting.sipUri || 'Unknown Caller';
                 const meetingDetails = meeting.sipUri || meeting.destination;
 
                 // Show incoming call toast
@@ -646,7 +720,7 @@ export const useWebexMeetings = () => {
                     meetingId: meeting.id,
                     callerName,
                     meetingDetails,
-                    meeting // Store reference for answering
+                    meeting, // Store reference for answering
                 });
 
                 console.log('[IncomingCall] Incoming call from:', callerName);
@@ -678,7 +752,7 @@ export const useWebexMeetings = () => {
             console.error('[IncomingCall] Error answering call:', err);
             meetingsStore.addNotification({
                 type: 'error',
-                message: 'Failed to answer incoming call'
+                message: 'Failed to answer incoming call',
             });
             throw err;
         }
@@ -727,6 +801,6 @@ export const useWebexMeetings = () => {
         broadcastPinState,
         setupGlobalMeetingListeners,
         answerIncomingCall,
-        declineIncomingCall
+        declineIncomingCall,
     };
 };

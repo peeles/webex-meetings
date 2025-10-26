@@ -7,19 +7,19 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomePage
+        component: HomePage,
     },
     {
         path: '/meeting/:id',
         name: 'meeting',
         component: MeetingPage,
-        meta: { requiresAuth: true }
-    }
+        meta: { requiresAuth: true },
+    },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 });
 
 router.beforeEach((to, from, next) => {

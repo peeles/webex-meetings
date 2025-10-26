@@ -1,5 +1,5 @@
 export const LAYOUTS = Object.freeze({
-    ALL_EQUAL: 'AllEqual'
+    ALL_EQUAL: 'AllEqual',
 });
 
 export const SOURCE_STATES = Object.freeze({
@@ -7,21 +7,21 @@ export const SOURCE_STATES = Object.freeze({
     INACTIVE: 'inactive',
     MUTED: 'muted',
     AVATAR: 'avatar',
-    LIVE: 'live'
+    LIVE: 'live',
 });
 
 export const MEETING_STATES = Object.freeze({
     IDLE: 'IDLE',
     JOINED: 'JOINED',
     LEFT: 'LEFT',
-    JOINING: 'JOINING'
+    JOINING: 'JOINING',
 });
 
 export const PARTICIPANT_STATUS = Object.freeze({
     IN_MEETING: 'IN_MEETING',
     IN_LOBBY: 'IN_LOBBY',
     NOT_IN_MEETING: 'NOT_IN_MEETING',
-    DECLINED: 'DECLINED'
+    DECLINED: 'DECLINED',
 });
 
 export const PANE_SIZES = Object.freeze({
@@ -29,4 +29,4 @@ export const PANE_SIZES = Object.freeze({
     SMALL: 'small',
     MEDIUM: 'medium',
     LARGE: 'large',
-})
+});

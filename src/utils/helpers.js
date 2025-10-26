@@ -8,10 +8,10 @@ export const formatTimestamp = (date = new Date()) => {
 export const getStateLabel = (state) => {
     const labels = {
         'no source': 'Waiting...',
-        'inactive': 'Camera off',
-        'muted': 'Muted',
-        'avatar': 'Camera off',
-        'live': ''
+        inactive: 'Camera off',
+        muted: 'Muted',
+        avatar: 'Camera off',
+        live: '',
     };
     return labels[state] || state;
 };

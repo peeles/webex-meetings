@@ -1,6 +1,8 @@
 <template>
-    <div class="h-screen w-screen bg-gray-900 flex flex-col overflow-hidden">
-        <header class="bg-gray-800 px-4 py-3 flex items-center justify-between flex-shrink-0">
+    <div class="h-screen w-screen bg-stone-900 flex flex-col overflow-hidden">
+        <header
+            class="bg-stone-800 px-4 py-3 flex items-center justify-between flex-shrink-0"
+        >
             <div class="flex items-center gap-4">
                 <h2 class="text-white font-semibold">
                     {{ meetingTitle }}
@@ -32,8 +34,10 @@ const meetingTitle = computed(() => {
     return meeting?.sipUri || meeting?.destination || 'Meeting';
 });
 
-watch(() => meetingsStore.currentLayout, (newLayout) => {
-    selectedLayout.value = newLayout;
-});
-
+watch(
+    () => meetingsStore.currentLayout,
+    (newLayout) => {
+        selectedLayout.value = newLayout;
+    }
+);
 </script>

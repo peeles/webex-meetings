@@ -34,13 +34,13 @@ export function testIncomingCall(
     console.log('Testing incoming call:', {
         callerName,
         meetingDetails,
-        meetingId
+        meetingId,
     });
 
     meetingsStore.setIncomingCall({
         meetingId,
         callerName,
-        meetingDetails
+        meetingDetails,
     });
 
     console.log('Incoming call toast should appear in bottom-right');
@@ -68,7 +68,7 @@ export async function testMultipleCalls() {
     const calls = [
         { name: 'Alice Johnson', details: 'alice@company.com' },
         { name: 'Bob Smith', details: 'bob@company.com' },
-        { name: 'Charlie Brown', details: 'charlie@company.com' }
+        { name: 'Charlie Brown', details: 'charlie@company.com' },
     ];
 
     for (let i = 0; i < calls.length; i++) {
@@ -78,9 +78,9 @@ export async function testMultipleCalls() {
         testIncomingCall(call.name, call.details);
 
         // Wait 5 seconds before next call
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         clearIncomingCall();
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     console.log('Multiple calls test complete');
@@ -128,7 +128,7 @@ export async function simulateRealCall() {
         'Sarah Williams',
         'Michael Chen',
         'Emily Rodriguez',
-        'David Kim'
+        'David Kim',
     ];
 
     const randomCaller = callers[Math.floor(Math.random() * callers.length)];
@@ -156,24 +156,24 @@ export async function autoTest() {
     // Test 1: Show and auto-clear
     console.log('Test 1: Show and auto-clear after 3 seconds');
     testIncomingCall('Auto Test 1', 'auto1@test.com');
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     clearIncomingCall();
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Test 2: Multiple rapid calls
     console.log('\nTest 2: Rapid successive calls');
     for (let i = 0; i < 3; i++) {
         testIncomingCall(`Rapid Call ${i + 1}`, `rapid${i}@test.com`);
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         clearIncomingCall();
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     // Test 3: Edge cases
     console.log('\nTest 3: Edge cases');
     testIncomingCall('', ''); // Unknown caller
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     clearIncomingCall();
 
     console.log('\n✅ Automated test sequence complete!');

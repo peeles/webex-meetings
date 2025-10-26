@@ -11,7 +11,10 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = token;
         if (token) {
             localStorage.setItem('webex-access-token', token);
-            localStorage.setItem('webex-token-date', Date.now() + (12 * 60 * 60 * 1000));
+            localStorage.setItem(
+                'webex-token-date',
+                Date.now() + 12 * 60 * 60 * 1000
+            );
         }
     };
 
@@ -58,6 +61,6 @@ export const useAuthStore = defineStore('auth', () => {
         setRegistered,
         setInitialising,
         setError,
-        clearAuth
+        clearAuth,
     };
 });

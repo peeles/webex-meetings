@@ -36,7 +36,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
             sipUri: meeting.sipUri,
             destination: meeting.destination,
             state: meeting.state,
-            meeting: markRaw(meeting) // Preserve SDK instance methods
+            meeting: markRaw(meeting), // Preserve SDK instance methods
         });
     };
 
@@ -81,13 +81,15 @@ export const useMeetingsStore = defineStore('meetings', () => {
         try {
             return participants[id];
         } catch (e) {
+            console.error(e);
+
             return null;
         }
     };
 
     const removeParticipant = (id) => {
         delete participants[id];
-    }
+    };
 
     const getMeetingById = (id) => {
         return meetingsMap.get(id);
@@ -119,7 +121,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
         const notif = {
             id: Date.now(),
             timestamp: new Date(),
-            ...notification
+            ...notification,
         };
         meetingNotifications.value.push(notif);
 
@@ -130,7 +132,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
     };
 
     const removeNotification = (id) => {
-        const index = meetingNotifications.value.findIndex(n => n.id === id);
+        const index = meetingNotifications.value.findIndex((n) => n.id === id);
         if (index !== -1) {
             meetingNotifications.value.splice(index, 1);
         }
@@ -143,7 +145,7 @@ export const useMeetingsStore = defineStore('meetings', () => {
     const setIncomingCall = (callData) => {
         incomingCall.value = {
             ...callData,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         };
     };
 

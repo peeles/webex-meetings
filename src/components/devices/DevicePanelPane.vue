@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+    <div class="bg-white rounded-lg border border-stone-200 p-6 space-y-4">
         <h2 class="text-xl font-semibold">Device Settings</h2>
 
         <DeviceSelector
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { useMediaStore } from '../../storage/media.js';
+import { useMediaStore } from '@/storage/media.js';
 import DeviceSelector from './DeviceSelector.vue';
 
 const mediaStore = useMediaStore();

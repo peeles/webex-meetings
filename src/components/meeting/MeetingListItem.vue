@@ -1,8 +1,12 @@
 <template>
-    <div class="bg-white rounded-lg border border-gray-200 p-4 flex items-center justify-between">
+    <div
+        class="bg-white rounded-lg border border-stone-200 p-4 flex items-center justify-between"
+    >
         <div>
-            <p class="font-medium">{{ meeting.sipUri || meeting.destination }}</p>
-            <p class="text-sm text-gray-500">{{ meeting.id }}</p>
+            <p class="font-medium">
+                {{ meeting.sipUri || meeting.destination }}
+            </p>
+            <p class="text-sm text-stone-500">{{ meeting.id }}</p>
         </div>
 
         <BaseButton size="sm" @click="$emit('join', meeting.id)">
@@ -12,13 +16,13 @@
 </template>
 
 <script setup>
-import BaseButton from '../base/BaseButton.vue';
+import BaseButton from '@/components/base/BaseButton.vue';
 
 defineProps({
     meeting: {
         type: Object,
-        required: true
-    }
+        required: true,
+    },
 });
 
 defineEmits(['join']);

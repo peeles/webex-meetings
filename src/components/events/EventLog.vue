@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="bg-white rounded-lg border border-stone-200 p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold">Events Log</h2>
             <BaseButton size="sm" variant="secondary" @click="clearLog">

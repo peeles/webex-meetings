@@ -5,25 +5,25 @@ export const useMediaStore = defineStore('media', () => {
     const localStreams = ref({
         microphone: null,
         camera: null,
-        screenShare: { video: null, audio: null }
+        screenShare: { video: null, audio: null },
     });
 
     const devices = ref({
         audioInputs: [],
         audioOutputs: [],
-        videoInputs: []
+        videoInputs: [],
     });
 
     const selectedDevices = ref({
         audioInput: null,
         audioOutput: null,
-        videoInput: null
+        videoInput: null,
     });
 
     const mediaStates = ref({
         audioMuted: false,
         videoMuted: false,
-        screenSharing: false
+        screenSharing: false,
     });
 
     const remotePanes = ref([]);
@@ -56,7 +56,7 @@ export const useMediaStore = defineStore('media', () => {
     };
 
     const addRemotePane = (pane) => {
-        const exists = remotePanes.value.find(p => p.id === pane.id);
+        const exists = remotePanes.value.find((p) => p.id === pane.id);
         if (!exists) {
             remotePanes.value.push(pane);
         } else {
@@ -65,7 +65,7 @@ export const useMediaStore = defineStore('media', () => {
     };
 
     const removeRemotePane = (paneId) => {
-        const index = remotePanes.value.findIndex(p => p.id === paneId);
+        const index = remotePanes.value.findIndex((p) => p.id === paneId);
         if (index !== -1) {
             remotePanes.value.splice(index, 1);
         }
@@ -73,7 +73,7 @@ export const useMediaStore = defineStore('media', () => {
 
     const clearRemotePanes = () => {
         remotePanes.value = [];
-        remoteAudioElements.value.forEach(el => {
+        remoteAudioElements.value.forEach((el) => {
             el.pause();
             el.srcObject = null;
         });
@@ -86,7 +86,7 @@ export const useMediaStore = defineStore('media', () => {
         localStreams.value = {
             microphone: null,
             camera: null,
-            screenShare: { video: null, audio: null }
+            screenShare: { video: null, audio: null },
         };
     };
 
@@ -104,6 +104,6 @@ export const useMediaStore = defineStore('media', () => {
         addRemotePane,
         removeRemotePane,
         clearRemotePanes,
-        clearLocalStreams
+        clearLocalStreams,
     };
 });

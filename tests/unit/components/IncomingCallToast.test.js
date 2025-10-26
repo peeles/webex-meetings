@@ -18,7 +18,7 @@ describe('IncomingCallToast', () => {
         return mount(IncomingCallToast, {
             props: props,
             slots: slots,
-        })
+        });
     };
 
     it('renders when visible', () => {
@@ -26,7 +26,7 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
         expect(wrapper.find('.fixed.bottom-6.right-6').exists()).toBe(true);
@@ -40,7 +40,7 @@ describe('IncomingCallToast', () => {
             isVisible: false,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
         expect(wrapper.find('.fixed.bottom-6.right-6').exists()).toBe(false);
@@ -51,12 +51,12 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
-        const answerButton = wrapper.findAll('button').find(btn =>
-            btn.text().includes('Answer')
-        );
+        const answerButton = wrapper
+            .findAll('button')
+            .find((btn) => btn.text().includes('Answer'));
 
         await answerButton.trigger('click');
 
@@ -69,12 +69,12 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
-        const declineButton = wrapper.findAll('button').find(btn =>
-            btn.text().includes('Decline')
-        );
+        const declineButton = wrapper
+            .findAll('button')
+            .find((btn) => btn.text().includes('Decline'));
 
         await declineButton.trigger('click');
 
@@ -89,7 +89,7 @@ describe('IncomingCallToast', () => {
             meetingDetails: 'john@example.com',
             meetingId: 'meeting-123',
             autoDeclineTime: 30,
-            showTimer: true
+            showTimer: true,
         });
 
         expect(wrapper.text()).toContain('Auto-decline in');
@@ -102,7 +102,7 @@ describe('IncomingCallToast', () => {
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
             meetingId: 'meeting-123',
-            showTimer: false
+            showTimer: false,
         });
 
         expect(wrapper.text()).not.toContain('Auto-decline in');
@@ -157,7 +157,7 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: longName,
             meetingDetails: 'test@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
         expect(wrapper.text()).toContain(longName);
@@ -240,12 +240,12 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
-        const answerButton = wrapper.findAll('button').find(btn =>
-            btn.text().includes('Answer')
-        );
+        const answerButton = wrapper
+            .findAll('button')
+            .find((btn) => btn.text().includes('Answer'));
 
         expect(answerButton.classes()).toContain('bg-green-500');
         expect(answerButton.classes()).toContain('hover:bg-green-600');
@@ -256,12 +256,12 @@ describe('IncomingCallToast', () => {
             isVisible: true,
             callerName: 'John Doe',
             meetingDetails: 'john@example.com',
-            meetingId: 'meeting-123'
+            meetingId: 'meeting-123',
         });
 
-        const declineButton = wrapper.findAll('button').find(btn =>
-            btn.text().includes('Decline')
-        );
+        const declineButton = wrapper
+            .findAll('button')
+            .find((btn) => btn.text().includes('Decline'));
 
         expect(declineButton.classes()).toContain('bg-red-500');
         expect(declineButton.classes()).toContain('hover:bg-red-600');

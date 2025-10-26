@@ -1,10 +1,10 @@
 <template>
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="bg-white rounded-lg border border-stone-200 p-6">
         <h2 class="text-xl font-semibold mb-4">Create Meeting</h2>
 
-        <form @submit.prevent="handleSubmit" class="space-y-4">
+        <form class="space-y-4" @submit.prevent="handleSubmit">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-stone-700 mb-2">
                     Meeting Destination
                 </label>
                 <BaseInput
@@ -23,8 +23,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import BaseInput from '../base/BaseInput.vue';
-import BaseButton from '../base/BaseButton.vue';
+import BaseInput from '@/components/base/BaseInput.vue';
+import BaseButton from '@/components/base/BaseButton.vue';
 
 const emit = defineEmits(['create']);
 

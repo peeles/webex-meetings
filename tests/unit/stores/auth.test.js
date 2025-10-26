@@ -25,7 +25,9 @@ describe('Auth Store', () => {
     it('persists token to localStorage', () => {
         const store = useAuthStore();
         store.setAccessToken('test-token-123');
-        expect(localStorage.getItem('webex-access-token')).toBe('test-token-123');
+        expect(localStorage.getItem('webex-access-token')).toBe(
+            'test-token-123'
+        );
         expect(localStorage.getItem('webex-token-date')).toBeTruthy();
     });
 

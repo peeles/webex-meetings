@@ -54,7 +54,7 @@ describe('useWebexMeetings - leaveMeeting', () => {
             leave: vi.fn().mockResolvedValue(),
             members: {
                 on: vi.fn(),
-                off: vi.fn()
+                off: vi.fn(),
             },
             remoteMediaManager: {
                 stop: vi.fn().mockResolvedValue(),
@@ -108,7 +108,9 @@ describe('useWebexMeetings - leaveMeeting', () => {
     it('should properly clean up all resources when leaving a meeting', async () => {
         // Import modules after mocking
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings');
         const { useMediaStore } = await import('@/storage/media');
         const { useParticipantsStore } = await import('@/storage/participants');
@@ -144,7 +146,10 @@ describe('useWebexMeetings - leaveMeeting', () => {
         // Spy on cleanup methods
         const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
         const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
-        const clearParticipantsSpy = vi.spyOn(participantsStore, 'clearParticipants');
+        const clearParticipantsSpy = vi.spyOn(
+            participantsStore,
+            'clearParticipants'
+        );
 
         // Act: Leave the meeting
         await leaveMeeting('meeting-123');
@@ -178,7 +183,9 @@ describe('useWebexMeetings - leaveMeeting', () => {
 
     it('should stop local media streams before leaving meeting', async () => {
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings, getLocalMedia } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings, getLocalMedia } = await import(
+            '@/composables/useWebexMeetings'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings');
         const { useMediaStore } = await import('@/storage/media');
 
@@ -196,14 +203,14 @@ describe('useWebexMeetings - leaveMeeting', () => {
         const micStream = {
             getTracks: vi.fn(() => [micTrack]),
             outputStream: {
-                getTracks: vi.fn(() => [])
-            }
+                getTracks: vi.fn(() => []),
+            },
         };
         const camStream = {
             getTracks: vi.fn(() => [camTrack]),
             outputStream: {
-                getTracks: vi.fn(() => [])
-            }
+                getTracks: vi.fn(() => []),
+            },
         };
 
         // Set streams in both store and localMedia
@@ -227,7 +234,9 @@ describe('useWebexMeetings - leaveMeeting', () => {
 
     it('should handle leaving when no meeting exists gracefully', async () => {
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -240,10 +249,14 @@ describe('useWebexMeetings - leaveMeeting', () => {
 
     it('creates local media streams when joining without pre-initialised media', async () => {
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings');
         const { useMediaStore } = await import('@/storage/media');
-        const { __webexMediaMocks } = await import('@/composables/useWebexMedia');
+        const { __webexMediaMocks } = await import(
+            '@/composables/useWebexMedia'
+        );
 
         const { initWebex } = useWebex();
         const { joinMeeting } = useWebexMeetings();
@@ -271,10 +284,11 @@ describe('useWebexMeetings - leaveMeeting', () => {
         expect(meetingsStore.currentMeetingId).toBe(mockMeeting.id);
     });
 
-
     it('updates pinned participant when receiving PIN_PARTICIPANT event', async () => {
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings'
+        );
         const { useParticipantsStore } = await import('@/storage/participants');
 
         const { initWebex } = useWebex();
@@ -285,22 +299,22 @@ describe('useWebexMeetings - leaveMeeting', () => {
 
         await createMeeting('test@example.com');
 
-        const pinEventHandler = mockMeeting.on.mock.calls.find(([eventName]) =>
-            eventName === 'meeting:receiveCustomEvent'
+        const pinEventHandler = mockMeeting.on.mock.calls.find(
+            ([eventName]) => eventName === 'meeting:receiveCustomEvent'
         )?.[1];
 
         expect(typeof pinEventHandler).toBe('function');
 
         pinEventHandler({
             type: 'PIN_PARTICIPANT',
-            data: { memberId: 'member-123' }
+            data: { memberId: 'member-123' },
         });
 
         expect(participantsStore.pinnedParticipantId).toBe('member-123');
 
         pinEventHandler({
             type: 'PIN_PARTICIPANT',
-            data: {}
+            data: {},
         });
 
         expect(participantsStore.pinnedParticipantId).toBeNull();
@@ -308,7 +322,9 @@ describe('useWebexMeetings - leaveMeeting', () => {
 
     it('should clean up when meeting ends remotely', async () => {
         const { useWebex } = await import('@/composables/useWebex');
-        const { useWebexMeetings, getLocalMedia } = await import('@/composables/useWebexMeetings');
+        const { useWebexMeetings, getLocalMedia } = await import(
+            '@/composables/useWebexMeetings'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings');
         const { useMediaStore } = await import('@/storage/media');
         const { useParticipantsStore } = await import('@/storage/participants');
@@ -331,14 +347,14 @@ describe('useWebexMeetings - leaveMeeting', () => {
         const micStream = {
             getTracks: vi.fn(() => [micTrack]),
             outputStream: {
-                getTracks: vi.fn(() => [])
-            }
+                getTracks: vi.fn(() => []),
+            },
         };
         const camStream = {
             getTracks: vi.fn(() => [camTrack]),
             outputStream: {
-                getTracks: vi.fn(() => [])
-            }
+                getTracks: vi.fn(() => []),
+            },
         };
 
         mediaStore.setLocalStream('microphone', micStream);
@@ -355,23 +371,30 @@ describe('useWebexMeetings - leaveMeeting', () => {
         participantsStore.addParticipant({
             id: 'user-1',
             name: 'Remote User',
-            status: 'IN_MEETING'
+            status: 'IN_MEETING',
         });
 
         const clearLocalStreamsSpy = vi.spyOn(mediaStore, 'clearLocalStreams');
         const clearRemotePanesSpy = vi.spyOn(mediaStore, 'clearRemotePanes');
-        const clearParticipantsSpy = vi.spyOn(participantsStore, 'clearParticipants');
+        const clearParticipantsSpy = vi.spyOn(
+            participantsStore,
+            'clearParticipants'
+        );
         const addNotificationSpy = vi.spyOn(meetingsStore, 'addNotification');
 
         const endedHandlers = meetingEventHandlers['meeting:ended'];
-        expect(Array.isArray(endedHandlers) && endedHandlers.length).toBeTruthy();
+        expect(
+            Array.isArray(endedHandlers) && endedHandlers.length
+        ).toBeTruthy();
 
         await endedHandlers[0]({ reason: 'remoteLeft' });
 
         expect(clearLocalStreamsSpy).toHaveBeenCalled();
         expect(clearRemotePanesSpy).toHaveBeenCalled();
         expect(clearParticipantsSpy).toHaveBeenCalled();
-        expect(meetingsStore.getMeetingById('meeting-123').state).toBe(MEETING_STATES.LEFT);
+        expect(meetingsStore.getMeetingById('meeting-123').state).toBe(
+            MEETING_STATES.LEFT
+        );
         expect(meetingsStore.currentMeetingId).toBeNull();
         expect(meetingsStore.isModerator).toBe(false);
         expect(mediaStore.mediaStates.audioMuted).toBe(false);
@@ -380,8 +403,10 @@ describe('useWebexMeetings - leaveMeeting', () => {
         expect(participantsStore.participants.size).toBe(0);
         expect(micTrack.stop).toHaveBeenCalled();
         expect(camTrack.stop).toHaveBeenCalled();
-        expect(addNotificationSpy).toHaveBeenCalledWith(expect.objectContaining({
-            message: 'Meeting has ended'
-        }));
+        expect(addNotificationSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                message: 'Meeting has ended',
+            })
+        );
     });
 });

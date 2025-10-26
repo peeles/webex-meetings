@@ -67,6 +67,6 @@ export const useWebexAuth = () => {
     return {
         register,
         unregister,
-        initialiseWithToken
+        initialiseWithToken,
     };
 };

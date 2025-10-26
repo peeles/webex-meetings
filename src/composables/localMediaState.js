@@ -15,12 +15,12 @@ const stopStreamTracks = (stream) => {
     }
 
     if (typeof stream.getTracks === 'function') {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
     }
 
     const outputTracks = stream.outputStream?.getTracks?.();
     if (Array.isArray(outputTracks)) {
-        outputTracks.forEach(track => track.stop());
+        outputTracks.forEach((track) => track.stop());
     }
 };
 

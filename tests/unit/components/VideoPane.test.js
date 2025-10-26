@@ -21,9 +21,7 @@ describe('VideoPane', () => {
         VideoPane = module.default;
 
         // Create a fresh MediaStream for each test
-        mockStream = new MediaStream([
-            new MediaStreamTrack(),
-        ]);
+        mockStream = new MediaStream([new MediaStreamTrack()]);
     });
 
     it('renders correctly with live stream', () => {
@@ -34,8 +32,8 @@ describe('VideoPane', () => {
                 sourceState: 'live',
             },
             global: {
-                plugins: [createPinia()]
-            }
+                plugins: [createPinia()],
+            },
         });
 
         expect(wrapper.find('video').exists()).toBe(true);
@@ -50,8 +48,8 @@ describe('VideoPane', () => {
                 sourceState: 'inactive',
             },
             global: {
-                plugins: [createPinia()]
-            }
+                plugins: [createPinia()],
+            },
         });
 
         expect(wrapper.find('.bg-black\\/60').exists()).toBe(true);
@@ -66,8 +64,8 @@ describe('VideoPane', () => {
                 sourceState: 'live',
             },
             global: {
-                plugins: [createPinia()]
-            }
+                plugins: [createPinia()],
+            },
         });
 
         expect(wrapper.text()).toContain('John Doe');

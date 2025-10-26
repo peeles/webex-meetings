@@ -1,6 +1,6 @@
 <template>
-    <div class="text-gray-700">
-        <span class="text-gray-500">{{ event.timestamp }}</span>
+    <div class="text-stone-700">
+        <span class="text-stone-500">{{ event.timestamp }}</span>
         <span class="ml-2">{{ event.message }}</span>
     </div>
 </template>
@@ -9,7 +9,7 @@
 defineProps({
     event: {
         type: Object,
-        required: true
-    }
+        required: true,
+    },
 });
 </script>
