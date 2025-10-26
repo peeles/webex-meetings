@@ -38,11 +38,13 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/storage/auth';
 import { useWebexAuth } from '@/composables/useWebexAuth';
+import { useWebexMeetings } from '@/composables/useWebexMeetings';
 import BaseInput from '@/components/base/BaseInput.vue';
 import BaseButton from '@/components/base/BaseButton.vue';
 
 const authStore = useAuthStore();
 const { initialiseWithToken } = useWebexAuth();
+const { setupGlobalMeetingListeners } = useWebexMeetings();
 
 const token = ref(authStore.accessToken || '');
 
@@ -59,6 +61,9 @@ const handleSubmit = async () => {
         }
 
         await initialiseWithToken(token.value);
+
+        // Set up global meeting listeners for incoming calls
+        setupGlobalMeetingListeners();
     } catch (err) {
         alert(err.message);
     }
