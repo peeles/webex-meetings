@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700">
+        <label class="block text-sm font-medium text-stone-700">
             {{ label }}
         </label>
         <BaseSelect

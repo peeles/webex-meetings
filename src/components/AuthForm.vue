@@ -1,10 +1,10 @@
 <template>
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="bg-white rounded-lg border border-stone-200 p-6">
         <h2 class="text-xl font-semibold mb-4">Authentication</h2>
 
         <form class="space-y-4" @submit.prevent="handleSubmit">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-stone-700 mb-2">
                     Access Token
                 </label>
                 <BaseInput

@@ -93,6 +93,7 @@ const containerClasses = computed(() => {
         medium: 'w-full',
         large: 'w-full h-full',
     };
+
     return sizes[props.size] || sizes.medium;
 });
 
@@ -124,7 +125,8 @@ onBeforeUnmount(() => {
 const handlePinToggle = () => {
     if (props.isPinned) {
         emit('unpin', props.memberId);
-    } else {
+    }
+    else {
         emit('pin', props.memberId);
     }
 };

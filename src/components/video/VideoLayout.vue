@@ -1,18 +1,20 @@
 <template>
     <div class="relative w-full h-full">
-        <div v-if="pinnedParticipant" class="flex w-full h-full p-4 gap-4">
+        <div
+            v-if="pinnedParticipant"
+            class="flex w-full h-full p-4 gap-4"
+            data-testid="pinned-layout"
+        >
             <div class="flex-1 flex items-center justify-center">
                 <VideoPane
                     :key="pinnedParticipant.id"
                     :stream="pinnedParticipant.stream"
-                    :participant-name="
-                        getParticipantName(pinnedParticipant.memberId)
-                    "
+                    :participant-name="getParticipantName(pinnedParticipant.memberId)"
                     :source-state="pinnedParticipant.sourceState"
                     :member-id="pinnedParticipant.memberId"
                     :is-pinned="true"
                     :is-local="false"
-                    size="large"
+                    :size="'large'"
                     @pin="handlePin"
                     @unpin="handleUnpin"
                 />
@@ -78,7 +80,7 @@
                     data-testid="hide-local-preview"
                     @click="hideLocalPreview"
                 >
-                    ✕
+                    <FontAwesomeIcon icon="x" />
                 </button>
             </div>
         </div>
@@ -90,6 +92,7 @@ import { computed, ref, watch } from 'vue';
 import { useParticipantsStore } from '@/storage/participants.js';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import VideoPane from './VideoPane.vue';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const props = defineProps({
     panes: {

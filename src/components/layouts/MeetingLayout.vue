@@ -1,7 +1,7 @@
 <template>
-    <div class="h-screen w-screen bg-gray-900 flex flex-col overflow-hidden">
+    <div class="h-screen w-screen bg-stone-900 flex flex-col overflow-hidden">
         <header
-            class="bg-gray-800 px-4 py-3 flex items-center justify-between flex-shrink-0"
+            class="bg-stone-800 px-4 py-3 flex items-center justify-between flex-shrink-0"
         >
             <div class="flex items-center gap-4">
                 <h2 class="text-white font-semibold">

@@ -1,7 +1,7 @@
 <template>
-    <div class="bg-white h-full w-96 border-l border-gray-200 flex flex-col">
+    <div class="bg-white h-full w-96 border-l border-stone-200 flex flex-col">
         <div
-            class="flex items-center justify-between p-4 border-b border-gray-200"
+            class="flex items-center justify-between p-4 border-b border-stone-200"
         >
             <h3 class="font-semibold text-lg">
                 Participants ({{

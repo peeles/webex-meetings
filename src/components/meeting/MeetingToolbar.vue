@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center gap-4 px-6 py-4 bg-white rounded-tl-3xl rounded-tr-3xl shadow-2xl border-2 border-gray-300"
+        class="flex items-center justify-center gap-4 px-6 py-4 bg-white rounded-tl-3xl rounded-tr-3xl shadow-2xl border-2 border-stone-300"
     >
         <IconButton
             :icon="audioMuted ? 'mic-off' : 'mic'"
@@ -28,7 +28,7 @@
         />
 
         <BaseButton
-            :class="'!rounded-full !py-1.5'"
+            :class="'!rounded-full !py-1.5 text-nowrap'"
             variant="danger"
             @click="$emit('leave')"
         >

@@ -1,17 +1,17 @@
 <template>
     <div
-        class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50"
+        class="flex items-center justify-between p-3 bg-white rounded-lg border border-stone-200 hover:bg-stone-50"
     >
         <div class="flex items-center gap-3">
             <BaseAvatar :name="participant.name" />
             <div>
                 <p class="font-medium text-sm">
                     {{ participant.name }}
-                    <span v-if="participant.isSelf" class="text-gray-500"
+                    <span v-if="participant.isSelf" class="text-stone-500"
                         >(You)</span
                     >
                 </p>
-                <p class="text-xs text-gray-500">{{ statusText }}</p>
+                <p class="text-xs text-stone-500">{{ statusText }}</p>
             </div>
         </div>
 

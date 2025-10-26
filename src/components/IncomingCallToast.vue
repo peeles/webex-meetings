@@ -9,7 +9,7 @@
     >
         <div
             v-if="isVisible"
-            class="fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-2xl border border-gray-200 p-4 w-86"
+            class="fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-2xl border border-stone-200 p-4 w-86"
         >
             <div class="flex items-start justify-between mb-3">
                 <div class="flex items-center gap-3">
@@ -21,11 +21,11 @@
                     </div>
                     <div>
                         <h3
-                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                            class="text-sm font-semibold text-stone-900 dark:text-white"
                         >
                             Incoming Call
                         </h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                        <p class="text-xs text-stone-500 dark:text-stone-400">
                             {{ callerName || 'Unknown' }}
                         </p>
                     </div>
@@ -34,9 +34,9 @@
 
             <div
                 v-if="meetingDetails"
-                class="mb-4 p-2 bg-gray-50 dark:bg-gray-900 rounded text-xs"
+                class="mb-4 p-2 bg-stone-50 dark:bg-stone-900 rounded text-xs"
             >
-                <p class="text-gray-600 dark:text-gray-300 truncate">
+                <p class="text-stone-600 dark:text-stone-300 truncate">
                     {{ meetingDetails }}
                 </p>
             </div>
@@ -60,10 +60,10 @@
 
             <div
                 v-if="showTimer"
-                class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700"
+                class="mt-3 pt-3 border-t border-stone-200 dark:border-stone-700"
             >
                 <div
-                    class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
+                    class="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400"
                 >
                     <span>Auto-decline in</span>
                     <span class="font-mono font-semibold"
@@ -71,7 +71,7 @@
                     >
                 </div>
                 <div
-                    class="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1"
+                    class="mt-1 w-full bg-stone-200 dark:bg-stone-700 rounded-full h-1"
                 >
                     <div
                         class="bg-red-500 h-1 rounded-full transition-all duration-1000"
