@@ -27,7 +27,7 @@ describe('ParticipantCard', () => {
     it('normalises multi-word status text by replacing underscores and lowercasing', () => {
         const wrapper = mountComponent();
 
-        expect(wrapper.find('.text-xs.text-gray-500').text()).toBe(
+        expect(wrapper.find('.text-xs.text-stone-500').text()).toBe(
             'in meeting now'
         );
     });
@@ -35,6 +35,6 @@ describe('ParticipantCard', () => {
     it('returns empty string when status is missing', () => {
         const wrapper = mountComponent({ status: undefined });
 
-        expect(wrapper.find('.text-xs.text-gray-500').text()).toBe('');
+        expect(wrapper.find('.text-xs.text-stone-500').text()).toBe('');
     });
 });

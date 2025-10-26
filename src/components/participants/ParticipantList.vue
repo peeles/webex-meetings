@@ -1,14 +1,17 @@
 <template>
     <div class="bg-white h-full w-96 border-l border-stone-200 flex flex-col">
-        <div
-            class="flex items-center justify-between p-4 border-b border-stone-200"
-        >
+        <div class="flex items-center justify-between p-4 border-b border-stone-200">
             <h3 class="font-semibold text-lg">
-                Participants ({{
-                    participantsStore.inMeetingParticipants.length
-                }})
+                Participants ({{ participantsStore.inMeetingParticipants.length + lobbyParticipants.length }})
             </h3>
-            <IconButton icon="x" variant="ghost" @click="$emit('close')" />
+            <BaseButton
+                variant="ghost"
+                size="sm"
+                class="!h-auto !p-2 rounded-full"
+                @click="$emit('close')"
+            >
+                <font-awesome-icon icon="xmark" class="w-4 h-4" />
+            </BaseButton>
         </div>
 
         <div
@@ -41,20 +44,27 @@
                 :key="participant.id"
                 :participant="participant"
             >
-                <template v-if="isModerator && !participant.isSelf" #actions>
-                    <IconButton
+                <template
+                    v-if="isModerator && !participant.isSelf"
+                    #actions
+                >
+                    <BaseButton
                         v-if="!participant.isAudioMuted"
-                        icon="mic-off"
                         variant="ghost"
                         size="sm"
+                        class="!h-auto !p-2 rounded-full"
                         @click="$emit('mute', participant.id)"
-                    />
-                    <IconButton
-                        icon="user-x"
+                    >
+                        <font-awesome-icon icon="microphone-slash" class="w-4 h-4" />
+                    </BaseButton>
+                    <BaseButton
                         variant="ghost"
                         size="sm"
+                        class="!h-auto !p-2 rounded-full"
                         @click="$emit('remove', participant.id)"
-                    />
+                    >
+                        <font-awesome-icon icon="user-xmark" class="w-4 h-4" />
+                    </BaseButton>
                 </template>
             </ParticipantCard>
         </div>
@@ -66,7 +76,6 @@ import { computed } from 'vue';
 import { useParticipantsStore } from '@/storage/participants';
 import ParticipantCard from './ParticipantCard.vue';
 import BaseButton from '@/components/base/BaseButton.vue';
-import IconButton from '@/components/base/IconButton.vue';
 
 defineProps({
     isModerator: {
@@ -79,9 +88,7 @@ defineEmits(['close', 'admit', 'mute', 'remove']);
 
 const participantsStore = useParticipantsStore();
 
-const inMeetingParticipants = computed(
-    () => participantsStore.inMeetingParticipants
-);
-
+const inMeetingParticipants = computed(() => participantsStore.inMeetingParticipants);
 const lobbyParticipants = computed(() => participantsStore.lobbyParticipants);
+
 </script>

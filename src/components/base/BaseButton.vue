@@ -2,7 +2,7 @@
     <button
         :type="type"
         :disabled="disabled"
-        :class="buttonClasses"
+        :class="['btn', buttonClasses]"
         @click="$emit('click', $event)"
     >
         <slot />
@@ -20,8 +20,7 @@ const props = defineProps({
     variant: {
         type: String,
         default: 'primary',
-        validator: (v) =>
-            ['primary', 'secondary', 'danger', 'ghost'].includes(v),
+        validator: (v) => ['primary', 'secondary', 'danger', 'ghost'].includes(v),
     },
     size: {
         type: String,
@@ -37,16 +36,11 @@ const props = defineProps({
 defineEmits(['click']);
 
 const buttonClasses = computed(() => {
-    const base =
-        'inline-flex items-center justify-center font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
-
     const variants = {
-        primary:
-            'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
-        secondary:
-            'bg-stone-200 text-stone-900 hover:bg-stone-300 focus-visible:ring-stone-500',
+        primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500',
+        secondary: 'bg-stone-200 text-stone-900 hover:bg-stone-300 focus-visible:ring-stone-500',
         danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500',
-        ghost: 'hover:bg-stone-100 text-stone-700',
+        ghost: 'hover:bg-stone-100 text-stone-500',
     };
 
     const sizes = {
@@ -55,6 +49,6 @@ const buttonClasses = computed(() => {
         lg: 'h-12 px-6 text-lg',
     };
 
-    return `${base} ${variants[props.variant]} ${sizes[props.size]}`;
+    return `${variants[props.variant]} ${sizes[props.size]}`;
 });
 </script>

@@ -80,7 +80,7 @@
                     data-testid="hide-local-preview"
                     @click="hideLocalPreview"
                 >
-                    <FontAwesomeIcon icon="x" />
+                    <FontAwesomeIcon icon="xmark" />
                 </button>
             </div>
         </div>
