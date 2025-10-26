@@ -1,9 +1,7 @@
 <template>
     <div class="relative flex flex-1 flex-col items-center justify-center w-full h-full">
-        <!-- Outer container with consistent bottom padding -->
         <div class="container-video-grid pb-8 flex flex-1 items-center justify-center w-full h-full mx-auto">
 
-            <!-- PINNED LAYOUT -->
             <div
                 v-if="pinnedParticipant"
                 class="flex flex-col lg:flex-row w-full h-full p-2 lg:p-4 gap-3 lg:gap-6 items-center justify-center"
@@ -28,10 +26,9 @@
                 </div>
             </div>
 
-            <!-- GRID LAYOUT -->
             <div
                 v-else
-                class="grid w-full h-full p-2 lg:p-4 gap-3 lg:gap-5 place-content-center auto-rows-[minmax(120px,1fr)]"
+                class="grid w-full max-w-[95vw] sm:max-w-[92vw] lg:max-w-[88vw] xl:max-w-[85vw] 3xl:max-w-[90vw] 4xl:max-w-[81.5vw] h-full p-2 lg:p-4 gap-3 lg:gap-5 place-content-center auto-rows-[minmax(120px,1fr)]"
                 :class="gridClasses"
                 data-testid="video-grid"
             >

@@ -27,6 +27,7 @@
     }
 }
 
-@custom-variant 3xl (@media (max-width: 2560px));
-@custom-variant 4xl (@media (max-width: 3200px));
+@custom-variant 3xl (@media (max-width: 1690px));
+@custom-variant 4xl (@media (max-width: 1920px));
+@custom-variant 5xl (@media (max-width: 3200px));
 @custom-variant supports-hardware-acceleration (@media (hover: hover) and (pointer: fine));
