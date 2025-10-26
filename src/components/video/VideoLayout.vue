@@ -1,86 +1,95 @@
 <template>
-    <div class="relative w-full h-full">
-        <div
-            v-if="pinnedParticipant"
-            class="flex w-full h-full p-4 gap-4"
-            data-testid="pinned-layout"
-        >
-            <div class="flex-1 flex items-center justify-center">
+    <div class="relative flex flex-1 flex-col items-center justify-center w-full h-full">
+        <div class="container-video-grid pb-8 flex flex-1 items-center justify-center w-full h-full mx-auto">
+
+            <div
+                v-if="pinnedParticipant"
+                class="flex flex-col lg:flex-row w-full h-full p-2 lg:p-4 gap-3 lg:gap-6 items-center justify-center"
+                data-testid="pinned-layout"
+            >
+                <div
+                    class="relative flex-1 flex items-center justify-center min-h-[200px] max-h-full w-full lg:w-auto rounded-xl overflow-hidden"
+                >
+                    <VideoPane
+                        :key="pinnedParticipant.id"
+                        :stream="pinnedParticipant.stream"
+                        :participant-name="getParticipantName(pinnedParticipant.memberId)"
+                        :source-state="pinnedParticipant.sourceState"
+                        :member-id="pinnedParticipant.memberId"
+                        :is-pinned="true"
+                        :is-local="false"
+                        size="large"
+                        class="w-full h-full object-cover"
+                        @pin="handlePin"
+                        @unpin="handleUnpin"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-else
+                class="grid w-full max-w-[95vw] sm:max-w-[92vw] lg:max-w-[88vw] xl:max-w-[85vw] 3xl:max-w-[90vw] 4xl:max-w-[81.5vw] h-full p-2 lg:p-4 gap-3 lg:gap-5 place-content-center auto-rows-[minmax(120px,1fr)]"
+                :class="gridClasses"
+                data-testid="video-grid"
+            >
                 <VideoPane
-                    :key="pinnedParticipant.id"
-                    :stream="pinnedParticipant.stream"
-                    :participant-name="getParticipantName(pinnedParticipant.memberId)"
-                    :source-state="pinnedParticipant.sourceState"
-                    :member-id="pinnedParticipant.memberId"
-                    :is-pinned="true"
+                    v-for="pane in gridPanes"
+                    :key="pane.id"
+                    :stream="pane.stream"
+                    :participant-name="getParticipantName(pane.memberId)"
+                    :source-state="pane.sourceState"
+                    :member-id="pane.memberId"
+                    :is-pinned="false"
                     :is-local="false"
-                    :size="'large'"
+                    size="medium"
+                    class="rounded-xl overflow-hidden"
                     @pin="handlePin"
                     @unpin="handleUnpin"
                 />
+
+                <div
+                    v-if="overflowCount"
+                    class="flex items-center justify-center bg-black/80 text-white text-lg lg:text-xl font-semibold rounded-lg"
+                    data-testid="overflow-count-tile"
+                >
+                    +{{ overflowCount }}
+                </div>
             </div>
         </div>
 
-        <div
-            v-else
-            class="flex flex-col items-center justify-center grid gap-2 p-4 w-full h-full"
-            :class="gridClasses"
-            data-testid="video-grid"
-        >
-            <VideoPane
-                v-for="pane in gridPanes"
-                :key="pane.id"
-                :stream="pane.stream"
-                :participant-name="getParticipantName(pane.memberId)"
-                :source-state="pane.sourceState"
-                :member-id="pane.memberId"
-                :is-pinned="false"
-                :is-local="false"
-                :size="'medium'"
-                @pin="handlePin"
-                @unpin="handleUnpin"
-            />
-
-            <div
-                v-if="overflowCount"
-                class="flex items-center justify-center bg-black/80 text-white text-xl font-semibold rounded-lg"
-                data-testid="overflow-count-tile"
-            >
-                +{{ overflowCount }}
-            </div>
-        </div>
-
+        <!-- LOCAL PREVIEW BUTTON -->
         <button
             v-if="localStream && !showLocalPreview"
             type="button"
-            class="absolute top-4 right-4 z-20 bg-black/70 text-white text-sm px-3 py-1 rounded-md shadow-lg hover:bg-black/90"
+            class="absolute top-4 right-4 z-20 bg-black/70 text-white text-xs md:text-sm px-3 py-1 rounded-md shadow hover:bg-black/90"
             data-testid="show-local-preview"
             @click="showLocalPreviewAgain"
         >
             Show self view
         </button>
 
+        <!-- LOCAL PREVIEW WINDOW -->
         <div
             v-if="localStream && showLocalPreview"
-            class="absolute top-4 right-4 z-20 w-56"
+            class="absolute top-4 right-4 z-20 w-40 sm:w-56 rounded-lg overflow-hidden shadow-lg border border-white/10"
             data-testid="local-preview"
         >
             <div class="relative">
                 <VideoPane
                     :stream="localStream"
-                    :participant-name="'You'"
-                    :source-state="'live'"
-                    :is-local="true"
-                    :size="'medium'"
-                    class="shadow-lg border border-white/10"
+                    participant-name="You"
+                    source-state="live"
+                    is-local
+                    size="medium"
+                    class="object-cover"
                 />
                 <button
                     type="button"
-                    class="absolute -top-2 -right-2 bg-black text-white text-xs px-2 py-1 rounded-full shadow-lg hover:bg-black/80"
+                    class="absolute -top-2 -right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full shadow hover:bg-black/90"
                     data-testid="hide-local-preview"
                     @click="hideLocalPreview"
                 >
-                    <FontAwesomeIcon icon="x" />
+                    <FontAwesomeIcon icon="xmark" />
                 </button>
             </div>
         </div>
@@ -92,7 +101,7 @@ import { computed, ref, watch } from 'vue';
 import { useParticipantsStore } from '@/storage/participants.js';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import VideoPane from './VideoPane.vue';
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps({
     panes: {

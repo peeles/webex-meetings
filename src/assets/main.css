@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+    --container-video-grid: min(90vw, var(--breakpoint-4xl));
+}
+
 @layer base {
     body {
         font-feature-settings: "rlig" 1, "calt" 1;
@@ -15,4 +19,15 @@
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
     }
+
+    .btn {
+        @apply inline-flex items-center justify-center font-medium rounded-md transition-colors cursor-pointer
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+        disabled:opacity-50 disabled:pointer-events-none;
+    }
 }
+
+@custom-variant 3xl (@media (max-width: 1690px));
+@custom-variant 4xl (@media (max-width: 1920px));
+@custom-variant 5xl (@media (max-width: 3200px));
+@custom-variant supports-hardware-acceleration (@media (hover: hover) and (pointer: fine));

@@ -9,36 +9,36 @@ import '@/assets/main.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
-  faMicrophone,
-  faMicrophoneSlash,
-  faVideo,
-  faVideoSlash,
-  faUsers,
-  faLock,
-  faUnlock,
-  faXmark,
-  faUserXmark,
-  faBookmark as faBookmarkSolid,
-  faPhone,
-  faPhoneSlash,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faUsers,
+    faLock,
+    faUnlock,
+    faXmark,
+    faUserXmark,
+    faBookmark as faBookmarkSolid,
+    faPhone,
+    faPhoneSlash,
 } from '@fortawesome/free-solid-svg-icons';
 import { faBookmark as faBookmarkRegular } from '@fortawesome/free-regular-svg-icons';
 
 // Add icons to library
 library.add(
-  faMicrophone,
-  faMicrophoneSlash,
-  faVideo,
-  faVideoSlash,
-  faUsers,
-  faLock,
-  faUnlock,
-  faXmark,
-  faUserXmark,
-  faBookmarkSolid,
-  faBookmarkRegular,
-  faPhone,
-  faPhoneSlash,
+    faMicrophone,
+    faMicrophoneSlash,
+    faVideo,
+    faVideoSlash,
+    faUsers,
+    faLock,
+    faUnlock,
+    faXmark,
+    faUserXmark,
+    faBookmarkSolid,
+    faBookmarkRegular,
+    faPhone,
+    faPhoneSlash
 );
 
 const pinia = createPinia();
@@ -47,7 +47,7 @@ pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
 
 // Register Font Awesome component globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.use(pinia);
 app.use(router);

@@ -1,6 +1,11 @@
 <template>
     <div
-        class="flex items-center justify-between p-3 bg-white rounded-lg border border-stone-200 hover:bg-stone-50"
+        :class="[
+            'flex items-center justify-between p-3 rounded-lg border',
+            participant.isSelf
+                ? 'bg-green-50 border-green-200 hover:bg-green-100'
+                : 'bg-white border-stone-200 hover:bg-stone-50',
+        ]"
     >
         <div class="flex items-center gap-3">
             <BaseAvatar :name="participant.name" />
@@ -34,9 +39,9 @@
 
 <script setup>
 import { computed } from 'vue';
+import { normaliseStatusText } from '@/utils/helpers';
 import BaseAvatar from '@/components/base/BaseAvatar.vue';
 import BaseBadge from '@/components/base/BaseBadge.vue';
-import { normaliseStatusText } from '@/utils/helpers';
 
 const props = defineProps({
     participant: {

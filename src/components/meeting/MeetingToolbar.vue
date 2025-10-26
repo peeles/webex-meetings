@@ -2,30 +2,47 @@
     <div
         class="flex items-center justify-center gap-4 px-6 py-4 bg-white rounded-tl-3xl rounded-tr-3xl shadow-2xl border-2 border-stone-300"
     >
-        <IconButton
-            :icon="audioMuted ? 'mic-off' : 'mic'"
+        <BaseButton
             :variant="audioMuted ? 'danger' : 'secondary'"
+            class="!h-auto !p-3 rounded-full"
             @click="$emit('toggleAudio')"
-        />
+        >
+            <font-awesome-icon
+                :icon="audioMuted ? 'microphone-slash' : 'microphone'"
+                class="w-5 h-5"
+            />
+        </BaseButton>
 
-        <IconButton
-            :icon="videoMuted ? 'video-off' : 'video'"
+        <BaseButton
             :variant="videoMuted ? 'danger' : 'secondary'"
+            class="!h-auto !p-3 rounded-full"
             @click="$emit('toggleVideo')"
-        />
+        >
+            <font-awesome-icon
+                :icon="videoMuted ? 'video-slash' : 'video'"
+                class="w-5 h-5"
+            />
+        </BaseButton>
 
-        <IconButton
+        <BaseButton
             v-if="isModerator"
-            :icon="meetingLocked ? 'lock' : 'unlock'"
             variant="secondary"
+            class="!h-auto !p-3 rounded-full"
             @click="$emit('toggleLock')"
-        />
+        >
+            <font-awesome-icon
+                :icon="meetingLocked ? 'lock' : 'unlock'"
+                class="w-5 h-5"
+            />
+        </BaseButton>
 
-        <IconButton
-            icon="users"
+        <BaseButton
             variant="secondary"
+            class="!h-auto !p-3 rounded-full"
             @click="$emit('toggleParticipants')"
-        />
+        >
+            <font-awesome-icon icon="users" class="w-5 h-5" />
+        </BaseButton>
 
         <BaseButton
             :class="'!rounded-full !py-1.5 text-nowrap'"
@@ -39,7 +56,6 @@
 
 <script setup>
 import BaseButton from '@/components/base/BaseButton.vue';
-import IconButton from '@/components/base/IconButton.vue';
 
 defineProps({
     audioMuted: {
