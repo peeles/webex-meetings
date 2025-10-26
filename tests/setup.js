@@ -33,7 +33,7 @@ library.add(
     faBookmarkSolid,
     faBookmarkRegular,
     faPhone,
-    faPhoneSlash,
+    faPhoneSlash
 );
 
 // Define MediaStream IMMEDIATELY - before any imports

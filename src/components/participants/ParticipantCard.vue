@@ -7,17 +7,23 @@
             <div>
                 <p class="font-medium text-sm">
                     {{ participant.name }}
-                    <span v-if="participant.isSelf" class="text-stone-500">(You)</span>
+                    <span v-if="participant.isSelf" class="text-stone-500"
+                        >(You)</span
+                    >
                 </p>
                 <p class="text-xs text-stone-500">{{ statusText }}</p>
             </div>
         </div>
 
         <div class="flex flex-col items-center gap-2">
-            <BaseBadge :variant="participant.isAudioMuted ? 'danger' : 'success'">
+            <BaseBadge
+                :variant="participant.isAudioMuted ? 'danger' : 'success'"
+            >
                 {{ participant.isAudioMuted ? 'Muted' : 'Audio' }}
             </BaseBadge>
-            <BaseBadge :variant="participant.isVideoMuted ? 'secondary' : 'success'">
+            <BaseBadge
+                :variant="participant.isVideoMuted ? 'secondary' : 'success'"
+            >
                 {{ participant.isVideoMuted ? 'No Video' : 'Video' }}
             </BaseBadge>
 

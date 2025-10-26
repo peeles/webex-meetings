@@ -124,7 +124,9 @@ describe('Device Cleanup on Meeting End', () => {
         const { useWebexMeetings } = await import(
             '@/composables/useWebexMeetings.js'
         );
-        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useWebexMedia } = await import(
+            '@/composables/useWebexMedia.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
         const { useMediaStore } = await import('@/storage/media.js');
 
@@ -167,8 +169,12 @@ describe('Device Cleanup on Meeting End', () => {
 
     it('should stop tracks before calling meeting.leave()', async () => {
         const { useWebex } = await import('@/composables/useWebex.js');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
+        const { useWebexMedia } = await import(
+            '@/composables/useWebexMedia.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
 
         const { initWebex } = useWebex();
@@ -203,7 +209,9 @@ describe('Device Cleanup on Meeting End', () => {
 
     it('should handle streams without getTracks method gracefully', async () => {
         const { useWebex } = await import('@/composables/useWebex.js');
-        const { useWebexMeetings } = await import( '@/composables/useWebexMeetings.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
         const { useMediaStore } = await import('@/storage/media.js');
 
@@ -229,11 +237,17 @@ describe('Device Cleanup on Meeting End', () => {
 
     it('should cleanup all resources in correct order', async () => {
         const { useWebex } = await import('@/composables/useWebex.js');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
+        const { useWebexMedia } = await import(
+            '@/composables/useWebexMedia.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
         const { useMediaStore } = await import('@/storage/media.js');
-        const { useParticipantsStore } = await import('@/storage/participants.js');
+        const { useParticipantsStore } = await import(
+            '@/storage/participants.js'
+        );
 
         const { initWebex } = useWebex();
         const { leaveMeeting } = useWebexMeetings();
@@ -312,8 +326,12 @@ describe('Device Cleanup on Meeting End', () => {
 
     it('should release device access after stopping tracks', async () => {
         const { useWebex } = await import('@/composables/useWebex.js');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
+        const { useWebexMedia } = await import(
+            '@/composables/useWebexMedia.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
 
         const { initWebex } = useWebex();
@@ -348,8 +366,12 @@ describe('Device Cleanup on Meeting End', () => {
 
     it('should stop outputStream tracks when leaving meeting', async () => {
         const { useWebex } = await import('@/composables/useWebex.js');
-        const { useWebexMeetings } = await import('@/composables/useWebexMeetings.js');
-        const { useWebexMedia } = await import('@/composables/useWebexMedia.js');
+        const { useWebexMeetings } = await import(
+            '@/composables/useWebexMeetings.js'
+        );
+        const { useWebexMedia } = await import(
+            '@/composables/useWebexMedia.js'
+        );
         const { useMeetingsStore } = await import('@/storage/meetings.js');
         const { useMediaStore } = await import('@/storage/media.js');
 

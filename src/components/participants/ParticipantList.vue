@@ -1,8 +1,13 @@
 <template>
     <div class="bg-white h-full w-96 border-l border-stone-200 flex flex-col">
-        <div class="flex items-center justify-between p-4 border-b border-stone-200">
+        <div
+            class="flex items-center justify-between p-4 border-b border-stone-200"
+        >
             <h3 class="font-semibold text-lg">
-                Participants ({{ participantsStore.inMeetingParticipants.length + lobbyParticipants.length }})
+                Participants ({{
+                    participantsStore.inMeetingParticipants.length +
+                    lobbyParticipants.length
+                }})
             </h3>
             <BaseButton
                 variant="ghost"
@@ -44,10 +49,7 @@
                 :key="participant.id"
                 :participant="participant"
             >
-                <template
-                    v-if="isModerator && !participant.isSelf"
-                    #actions
-                >
+                <template v-if="isModerator && !participant.isSelf" #actions>
                     <BaseButton
                         v-if="!participant.isAudioMuted"
                         variant="ghost"
@@ -55,7 +57,10 @@
                         class="!h-auto !p-2 rounded-full"
                         @click="$emit('mute', participant.id)"
                     >
-                        <font-awesome-icon icon="microphone-slash" class="w-4 h-4" />
+                        <font-awesome-icon
+                            icon="microphone-slash"
+                            class="w-4 h-4"
+                        />
                     </BaseButton>
                     <BaseButton
                         variant="ghost"
@@ -88,7 +93,8 @@ defineEmits(['close', 'admit', 'mute', 'remove']);
 
 const participantsStore = useParticipantsStore();
 
-const inMeetingParticipants = computed(() => participantsStore.inMeetingParticipants);
+const inMeetingParticipants = computed(
+    () => participantsStore.inMeetingParticipants
+);
 const lobbyParticipants = computed(() => participantsStore.lobbyParticipants);
-
 </script>

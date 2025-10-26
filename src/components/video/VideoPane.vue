@@ -35,7 +35,9 @@
         >
             <font-awesome-icon
                 :icon="isPinned ? 'bookmark' : ['far', 'bookmark']"
-                :class="isPinned ? 'h-5 w-5 text-blue-400' : 'h-5 w-5 text-white'"
+                :class="
+                    isPinned ? 'h-5 w-5 text-blue-400' : 'h-5 w-5 text-white'
+                "
             />
         </button>
     </div>
@@ -125,8 +127,7 @@ onBeforeUnmount(() => {
 const handlePinToggle = () => {
     if (props.isPinned) {
         emit('unpin', props.memberId);
-    }
-    else {
+    } else {
         emit('pin', props.memberId);
     }
 };

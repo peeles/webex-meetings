@@ -9,7 +9,9 @@
                 <VideoPane
                     :key="pinnedParticipant.id"
                     :stream="pinnedParticipant.stream"
-                    :participant-name="getParticipantName(pinnedParticipant.memberId)"
+                    :participant-name="
+                        getParticipantName(pinnedParticipant.memberId)
+                    "
                     :source-state="pinnedParticipant.sourceState"
                     :member-id="pinnedParticipant.memberId"
                     :is-pinned="true"
@@ -92,7 +94,7 @@ import { computed, ref, watch } from 'vue';
 import { useParticipantsStore } from '@/storage/participants.js';
 import { useMeetingsStore } from '@/storage/meetings.js';
 import VideoPane from './VideoPane.vue';
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps({
     panes: {
