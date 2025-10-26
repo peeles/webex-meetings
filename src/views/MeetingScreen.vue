@@ -10,8 +10,15 @@
 
                 <ParticipantList
                     v-if="showParticipants"
+                    :is-moderator="meetingsStore.isModerator"
                     class="absolute right-0 top-0 h-full w-80 z-10"
                     @close="showParticipants = false"
+                    @admit="handleAdmitParticipant"
+                    @mute-audio="handleMuteAudio"
+                    @mute-video="handleMuteVideo"
+                    @pin="handlePinParticipant"
+                    @unpin="handleUnpinParticipant"
+                    @remove="handleRemoveParticipant"
                 />
             </div>
 
@@ -38,6 +45,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useMediaStore } from '@/storage/media';
 import { useMeetingsStore } from '@/storage/meetings';
+import { useParticipantsStore } from '@/storage/participants';
 import { useWebexMeetings } from '@/composables/useWebexMeetings';
 import { useWebexMedia } from '@/composables/useWebexMedia';
 import MeetingLayout from '@components/layouts/MeetingLayout.vue';
@@ -49,7 +57,15 @@ const route = useRoute();
 const router = useRouter();
 const mediaStore = useMediaStore();
 const meetingsStore = useMeetingsStore();
-const { joinMeeting, leaveMeeting } = useWebexMeetings();
+const participantsStore = useParticipantsStore();
+const {
+    joinMeeting,
+    leaveMeeting,
+    muteParticipant,
+    removeParticipant,
+    admitFromLobby,
+    broadcastPinState,
+} = useWebexMeetings();
 const {
     createMicrophoneStream,
     createCameraStream,
@@ -95,5 +111,56 @@ const toggleVideo = () => {
 const handleLeave = async () => {
     await leaveMeeting(route.params.id);
     await router.push({ name: 'home' });
+};
+
+const handleAdmitParticipant = async (participantId) => {
+    try {
+        await admitFromLobby(meetingsStore.currentMeetingId, participantId);
+    } catch (err) {
+        console.error('Failed to admit participant:', err);
+    }
+};
+
+const handleMuteAudio = async (participantId) => {
+    try {
+        await muteParticipant(meetingsStore.currentMeetingId, participantId, true);
+    } catch (err) {
+        console.error('Failed to mute participant audio:', err);
+    }
+};
+
+const handleMuteVideo = async (participantId) => {
+    try {
+        // TODO: Implement video muting when SDK supports it
+        console.warn('Video muting not yet implemented', participantId);
+    } catch (err) {
+        console.error('Failed to mute participant video:', err);
+    }
+};
+
+const handlePinParticipant = async (participantId) => {
+    try {
+        participantsStore.pinParticipant(participantId);
+        await broadcastPinState(meetingsStore.currentMeetingId, participantId);
+    } catch (err) {
+        console.error('Failed to pin participant:', err);
+    }
+};
+
+const handleUnpinParticipant = async () => {
+    try {
+        participantsStore.unpinParticipant();
+        await broadcastPinState(meetingsStore.currentMeetingId, null);
+    } catch (err) {
+        console.error('Failed to unpin participant:', err);
+    }
+};
+
+const handleRemoveParticipant = async (participantId) => {
+    try {
+        await removeParticipant(meetingsStore.currentMeetingId, participantId);
+    } catch (err) {
+        console.error('Failed to remove participant:', err);
+    }
 };
 </script>
